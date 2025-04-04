@@ -3,7 +3,7 @@ import { generateIdeasUsingDisneyMethod } from '@/lib/disneyMethod';
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, method = 'disney' } = await request.json();
+    const { prompt, method = 'disney', language = 'en' } = await request.json();
 
     if (!prompt) {
       return NextResponse.json(
@@ -20,13 +20,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use the extracted Disney method function
-    const finalIdeas = await generateIdeasUsingDisneyMethod(prompt);
+    // Use the extracted Disney method function with language parameter
+    const finalIdeas = await generateIdeasUsingDisneyMethod(prompt, language);
 
     // Return ideas with method info
     return NextResponse.json({
       ideas: finalIdeas,
       method: 'disney',
+      language: language
     });
   } catch (error) {
     console.error('Error generating ideas:', error);

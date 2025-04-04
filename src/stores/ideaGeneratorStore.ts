@@ -150,6 +150,9 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
         setIsLoading(true);
         
         try {
+          // Get the current language
+          const currentLanguage = i18n.language;
+          
           // Call the API to generate ideas
           const response = await fetch('/api/generate', {
             method: 'POST',
@@ -159,6 +162,7 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
             body: JSON.stringify({
               prompt,
               method,
+              language: currentLanguage // Add the language parameter
             }),
           });
           

@@ -48,15 +48,27 @@ const criticSchema = z.object({
  * 3. Critic - identifies weaknesses and suggests improvements
  * 
  * @param prompt User's prompt for idea generation
+ * @param language Language code for generating ideas (e.g., 'en', 'ru')
  * @returns Top 3 generated ideas with evaluations
  */
-export async function generateIdeasUsingDisneyMethod(prompt: string): Promise<GeneratedIdea[]> {
+export async function generateIdeasUsingDisneyMethod(
+  prompt: string, 
+  language: string = 'en'
+): Promise<GeneratedIdea[]> {
+  // Language-specific instructions
+  const languageInstruction = language === 'en' 
+    ? 'Generate ideas in English.'
+    : language === 'ru'
+    ? 'Генерируй идеи на русском языке.'
+    : 'Generate ideas in English.';
+  
   // 1. Dreamer agent - generates creative ideas
   const { object: dreamerResponse } = await generateObject({
     model: openai('gpt-4o'),
     system: `You are a creative Dreamer in Walt Disney's method of idea generation. 
     Your role is to think big, be imaginative, and generate innovative ideas without worrying about practicality. 
-    Generate 5-7 creative ideas based on the user's prompt.`,
+    Generate 5-7 creative ideas based on the user's prompt.
+    ${languageInstruction}`,
     prompt,
     schema: dreamerSchema,
   });
@@ -69,7 +81,8 @@ export async function generateIdeasUsingDisneyMethod(prompt: string): Promise<Ge
     model: openai('gpt-4o'),
     system: `You are a practical Realist in Walt Disney's method of idea generation.
     Your role is to evaluate ideas from a practical standpoint, considering resources needed, feasibility, and implementation challenges.
-    Analyze each idea and provide a feasibility score (1-10) and practical considerations.`,
+    Analyze each idea and provide a feasibility score (1-10) and practical considerations.
+    ${languageInstruction}`,
     prompt: `Evaluate these ideas from a practical perspective:
     ${topIdeas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: realistSchema,
@@ -80,7 +93,8 @@ export async function generateIdeasUsingDisneyMethod(prompt: string): Promise<Ge
     model: openai('gpt-4o'),
     system: `You are a constructive Critic in Walt Disney's method of idea generation.
     Your role is to identify potential weaknesses, problems, and risks with each idea.
-    Be constructive but thorough in your criticism, and suggest possible improvements.`,
+    Be constructive but thorough in your criticism, and suggest possible improvements.
+    ${languageInstruction}`,
     prompt: `Critique these ideas and suggest improvements:
     ${topIdeas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: criticSchema,
