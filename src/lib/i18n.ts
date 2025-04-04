@@ -92,6 +92,22 @@ const resources = {
           disney: {
             name: "Disney Method",
             description: "Analyze ideas from three perspectives: Dreamer, Realist, and Critic"
+          },
+          brainstorming: {
+            name: "Brainstorming",
+            description: "Generate numerous ideas without judgment to find innovative solutions"
+          },
+          scamper: {
+            name: "SCAMPER",
+            description: "Transform existing ideas using Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse"
+          },
+          sixHats: {
+            name: "Six Thinking Hats",
+            description: "Evaluate ideas from multiple perspectives to identify all aspects of a solution"
+          },
+          mindMapping: {
+            name: "Mind Mapping",
+            description: "Visually organize information to find connections between ideas and concepts"
           }
         }
       },
@@ -190,6 +206,22 @@ const resources = {
           disney: {
             name: "Метод Диснея",
             description: "Анализ идей с трех позиций: Мечтатель, Реалист и Критик"
+          },
+          brainstorming: {
+            name: "Мозговой штурм",
+            description: "Генерация множества идей без критики для поиска инновационных решений"
+          },
+          scamper: {
+            name: "СКАМПЕР",
+            description: "Трансформация существующих идей с помощью Замены, Комбинирования, Адаптации, Модификации, Применения в другой области, Исключения и Обращения"
+          },
+          sixHats: {
+            name: "Шесть шляп мышления",
+            description: "Оценка идей с разных точек зрения для выявления всех аспектов решения"
+          },
+          mindMapping: {
+            name: "Интеллект-карта",
+            description: "Визуальная организация информации для нахождения связей между идеями и концепциями"
           }
         }
       },

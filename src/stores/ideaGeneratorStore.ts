@@ -14,15 +14,43 @@ export interface Method {
 
 // Methods data for idea generation
 export const METHODS: Method[] = [
-  // { id: 'brainstorming', name: 'Brainstorming', description: 'Generate as many ideas as possible without judgment' },
-  // { id: 'scamper', name: 'SCAMPER', description: 'Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse' },
-  // { id: 'sixHats', name: 'Six Thinking Hats', description: 'Look at the problem from different perspectives' },
-  // { id: 'mindMapping', name: 'Mind Mapping', description: 'Visually organize information to find connections' },
+  { 
+    id: 'brainstorming',
+    nameKey: 'generator.methods.brainstorming.name',
+    descriptionKey: 'generator.methods.brainstorming.description',
+    // Fallback values
+    name: 'Brainstorming', 
+    description: 'Generate as many ideas as possible without judgment' 
+  },
+  { 
+    id: 'scamper', 
+    nameKey: 'generator.methods.scamper.name',
+    descriptionKey: 'generator.methods.scamper.description',
+    // Fallback values
+    name: 'SCAMPER', 
+    description: 'Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse' 
+  },
+  { 
+    id: 'sixHats', 
+    nameKey: 'generator.methods.sixHats.name',
+    descriptionKey: 'generator.methods.sixHats.description',
+    // Fallback values
+    name: 'Six Thinking Hats', 
+    description: 'Look at the problem from different perspectives' 
+  },
+  { 
+    id: 'mindMapping', 
+    nameKey: 'generator.methods.mindMapping.name',
+    descriptionKey: 'generator.methods.mindMapping.description',
+    // Fallback values
+    name: 'Mind Mapping', 
+    description: 'Visually organize information to find connections' 
+  },
   { 
     id: 'disney', 
     nameKey: 'generator.methods.disney.name',
     descriptionKey: 'generator.methods.disney.description',
-    // These are fallbacks in case the translation is not found
+    // Fallback values
     name: 'Disney Method', 
     description: 'Analyze ideas from three perspectives: Dreamer, Realist, and Critic' 
   },
