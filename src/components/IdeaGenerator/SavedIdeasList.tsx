@@ -27,11 +27,11 @@ export default function SavedIdeasList() {
   }
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Divider sx={{ mb: 3 }} />
+    <Box sx={{ mt: 3 }}>
+      <Divider sx={{ mb: 2 }} />
       
       <Typography 
-        variant="h6" 
+        variant="subtitle1" 
         gutterBottom
         sx={{ 
           textAlign: 'center',
@@ -42,7 +42,7 @@ export default function SavedIdeasList() {
           justifyContent: 'center'
         }}
       >
-        <BookmarkIcon sx={{ mr: 1 }} />
+        <BookmarkIcon sx={{ mr: 0.5, fontSize: '1rem' }} />
         {t('generator.savedIdeas', { count: savedIdeas.length })}
       </Typography>
       
@@ -50,14 +50,14 @@ export default function SavedIdeasList() {
         elevation={0} 
         variant="outlined"
         sx={{ 
-          p: 2, 
+          p: 1.5, 
           borderRadius: 2,
           borderColor: theme.palette.divider,
-          maxHeight: '200px',
+          maxHeight: '180px',
           overflowY: 'auto'
         }}
       >
-        <Stack spacing={1}>
+        <Stack spacing={0.75}>
           {savedIdeas.map((idea, index) => (
             <Card 
               key={index} 
@@ -65,24 +65,25 @@ export default function SavedIdeasList() {
               sx={{
                 borderRadius: 1.5,
                 borderColor: 'transparent',
-                boxShadow: 1,
+                boxShadow: 0,
+                bgcolor: theme.palette.background.default,
                 transition: 'all 0.2s',
                 '&:hover': {
                   borderColor: theme.palette.primary.light,
-                  transform: 'translateY(-2px)'
+                  transform: 'translateY(-1px)'
                 }
               }}
             >
               <CardContent sx={{ 
-                py: 1, 
-                px: 2, 
+                py: 0.75, 
+                px: 1.5, 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
-                '&:last-child': { pb: 1 }
+                '&:last-child': { pb: 0.75 }
               }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 'medium' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                     {idea.title}
                   </Typography>
                   {idea.score && (
@@ -90,7 +91,7 @@ export default function SavedIdeasList() {
                       size="small"
                       label={`${idea.score}/10`}
                       color={idea.score >= 7 ? "success" : idea.score >= 5 ? "primary" : "error"}
-                      sx={{ mt: 0.5, width: 'fit-content' }}
+                      sx={{ mt: 0.5, width: 'fit-content', height: '20px', '& .MuiChip-label': { px: 1, py: 0 } }}
                     />
                   )}
                 </Box>
@@ -101,13 +102,14 @@ export default function SavedIdeasList() {
                     color="error"
                     sx={{ 
                       opacity: 0.7,
+                      padding: 0.5,
                       '&:hover': {
                         opacity: 1,
                         backgroundColor: 'rgba(211, 47, 47, 0.1)'
                       }
                     }}
                   >
-                    <DeleteIcon fontSize="small" />
+                    <DeleteIcon sx={{ fontSize: '0.9rem' }} />
                   </IconButton>
                 </Tooltip>
               </CardContent>

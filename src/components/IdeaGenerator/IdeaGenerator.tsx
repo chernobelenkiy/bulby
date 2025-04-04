@@ -1,5 +1,4 @@
 import { Container, Box, useTheme } from '@mui/material';
-import { GridContainer, GridItem } from '@/components/CustomGrid';
 import MethodSelector from './MethodSelector';
 import ChatInterface from './ChatInterface';
 import SavedIdeasList from './SavedIdeasList';
@@ -12,36 +11,31 @@ export default function IdeaGenerator() {
       sx={{ 
         bgcolor: theme.palette.background.default,
         minHeight: '100vh',
-        pt: 4,
-        pb: 6
+        pt: 3,
+        pb: 4
       }}
     >
       <Container 
-        maxWidth="lg" 
+        maxWidth="sm" 
         sx={{ 
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'
         }}
       >
-        <Box 
-          sx={{ 
-            width: '100%', 
-            maxWidth: '1200px'
-          }}
-        >
-          <GridContainer spacing={3}>
-            {/* Method selection and saved ideas */}
-            <GridItem xs={12} md={4}>
-              <MethodSelector />
-              <SavedIdeasList />
-            </GridItem>
-            
-            {/* Chat area */}
-            <GridItem xs={12} md={8}>
-              <ChatInterface />
-            </GridItem>
-          </GridContainer>
+        {/* Method selector centered at the top */}
+        <Box sx={{ width: '100%', maxWidth: '450px', mb: 2 }}>
+          <MethodSelector />
+        </Box>
+        
+        {/* Chat area */}
+        <Box sx={{ width: '100%' }}>
+          <ChatInterface />
+        </Box>
+        
+        {/* Saved ideas list */}
+        <Box sx={{ width: '100%', maxWidth: '450px', mt: 1.5 }}>
+          <SavedIdeasList />
         </Box>
       </Container>
     </Box>

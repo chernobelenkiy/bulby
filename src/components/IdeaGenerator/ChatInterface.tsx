@@ -40,13 +40,13 @@ export default function ChatInterface() {
 
   return (
     <Paper 
-      elevation={3}
+      elevation={2}
       sx={{ 
         p: 2, 
         display: 'flex', 
         flexDirection: 'column', 
-        height: '70vh',
-        maxHeight: '800px',
+        height: '65vh',
+        maxHeight: '700px',
         borderRadius: 2,
         overflow: 'hidden'
       }}
@@ -55,13 +55,13 @@ export default function ChatInterface() {
       <Box sx={{ 
         flexGrow: 1, 
         overflowY: 'auto', 
-        mb: 2,
-        p: 1,
+        mb: 1.5,
+        p: 0.5,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
       }}>
-        <Stack spacing={2} sx={{ width: '100%', maxWidth: '90%' }}>
+        <Stack spacing={1.5} sx={{ width: '100%', maxWidth: '95%' }}>
           {messages.map((msg, index) => (
             <Box 
               key={index} 
@@ -72,22 +72,22 @@ export default function ChatInterface() {
               }}
             >
               <Paper 
-                elevation={2} 
+                elevation={1} 
                 sx={{ 
-                  p: 2, 
+                  p: 1.5, 
                   bgcolor: msg.isUser ? theme.palette.primary.main : theme.palette.background.paper,
                   color: msg.isUser ? theme.palette.primary.contrastText : theme.palette.text.primary,
                   borderRadius: 2,
-                  boxShadow: 1
+                  boxShadow: 0
                 }}
               >
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {msg.text}
                 </Typography>
                 
                 {/* Render ideas if present */}
                 {msg.ideas && msg.ideas.length > 0 && (
-                  <Box sx={{ mt: 2 }}>
+                  <Box sx={{ mt: 1.5 }}>
                     {msg.ideas.map((idea) => (
                       <IdeaCard key={idea.title} idea={idea} />
                     ))}
@@ -99,22 +99,22 @@ export default function ChatInterface() {
           
           {/* Loading indicator */}
           {isLoading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress size={28} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.5 }}>
+              <CircularProgress size={24} />
             </Box>
           )}
         </Stack>
       </Box>
       
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ mb: 1.5 }} />
       
       {/* Message input */}
       <Box sx={{ 
         display: 'flex', 
-        p: 1,
+        p: 0.5,
         alignItems: 'center',
         width: '100%',
-        maxWidth: '95%',
+        maxWidth: '98%',
         mx: 'auto'
       }}>
         <TextField
@@ -125,11 +125,11 @@ export default function ChatInterface() {
           onChange={(e) => setChatMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           multiline
-          maxRows={3}
+          maxRows={2}
           sx={{ 
             mr: 1,
             '& .MuiOutlinedInput-root': {
-              borderRadius: 2
+              borderRadius: 1.5
             }
           }}
           disabled={isLoading || !selectedMethod}
@@ -137,13 +137,13 @@ export default function ChatInterface() {
         <Button 
           variant="contained"
           color="primary"
-          size="large"
-          endIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
+          size="medium"
+          endIcon={isLoading ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
           onClick={handleSendMessage}
           disabled={!chatMessage.trim() || !selectedMethod || isLoading}
           sx={{ 
-            borderRadius: 2,
-            px: 3,
+            borderRadius: 1.5,
+            px: 2,
             py: 1
           }}
         >

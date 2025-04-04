@@ -46,41 +46,43 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
     <Card 
       variant="outlined" 
       sx={{ 
-        mb: 2, 
+        mb: 1.5, 
         position: 'relative',
-        borderRadius: 2,
+        borderRadius: 1.5,
         overflow: 'hidden',
         borderColor: theme.palette.divider,
         transition: 'all 0.2s ease-in-out',
         '&:hover': {
-          boxShadow: 2,
+          boxShadow: 1,
           borderColor: theme.palette.primary.light,
         }
       }}
     >
-      <CardContent sx={{ pb: 1 }}>
+      <CardContent sx={{ p: 1.5 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Typography 
-            variant="h6" 
+            variant="subtitle1" 
             component="div" 
             gutterBottom
             fontWeight="medium"
             color={theme.palette.text.primary}
+            sx={{ mb: 0.5 }}
           >
             {idea.title}
           </Typography>
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center" sx={{ mt: 0.25 }}>
             <Rating 
               value={idea.score / 2} 
               precision={0.5} 
               readOnly 
               size="small"
+              sx={{ fontSize: '0.9rem' }}
             />
             <Chip
               size="small"
               label={`${idea.score}/10`}
               color={idea.score >= 7 ? "success" : idea.score >= 5 ? "primary" : "error"}
-              sx={{ ml: 1 }}
+              sx={{ ml: 0.5, height: '20px', '& .MuiChip-label': { px: 1, py: 0 } }}
             />
           </Box>
         </Box>
@@ -88,7 +90,7 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
         <Typography 
           variant="body2" 
           sx={{ 
-            mb: 2,
+            mb: 1.5,
             color: theme.palette.text.secondary
           }}
         >
@@ -98,28 +100,30 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
         {/* Notes from different perspectives */}
         {(idea.dreamerNotes || idea.realistNotes || idea.criticNotes) && (
           <>
-            <Divider sx={{ my: 1 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <Divider sx={{ my: 0.75 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
               <Button
                 size="small"
                 color="primary"
                 endIcon={<ExpandMoreIcon 
                   sx={{ 
                     transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s'
+                    transition: 'transform 0.3s',
+                    fontSize: '1rem'
                   }} 
                 />}
                 onClick={toggleExpand}
+                sx={{ py: 0, px: 1, minWidth: 'auto' }}
               >
                 {expanded ? t('generator.hideDetails') : t('generator.showDetails')}
               </Button>
             </Box>
             
             <Collapse in={expanded}>
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: 1 }}>
                 {idea.dreamerNotes && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="primary" fontWeight="bold">
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant="caption" color="primary" fontWeight="bold">
                       {t('generator.dreamerNotes')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.primary.main}` }}>
@@ -129,8 +133,8 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 )}
                 
                 {idea.realistNotes && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="info.main" fontWeight="bold">
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant="caption" color="info.main" fontWeight="bold">
                       {t('generator.realistNotes')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.info.main}` }}>
@@ -140,8 +144,8 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 )}
                 
                 {idea.criticNotes && (
-                  <Box sx={{ mb: 1 }}>
-                    <Typography variant="subtitle2" color="error.main" fontWeight="bold">
+                  <Box sx={{ mb: 0.5 }}>
+                    <Typography variant="caption" color="error.main" fontWeight="bold">
                       {t('generator.criticNotes')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.error.main}` }}>
@@ -154,14 +158,14 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
           </>
         )}
         
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             size="small"
             variant={isIdeasaved ? "contained" : "outlined"}
-            startIcon={isIdeasaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+            startIcon={isIdeasaved ? <BookmarkIcon fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}
             onClick={handleSaveIdea}
             color="primary"
-            sx={{ borderRadius: 4 }}
+            sx={{ borderRadius: 4, py: 0.25, px: 1.5 }}
           >
             {isIdeasaved ? t('generator.saved') : t('generator.save')}
           </Button>
