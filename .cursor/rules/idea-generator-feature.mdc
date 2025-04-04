@@ -1,0 +1,91 @@
+---
+description: How ideas generator work
+globs: 
+alwaysApply: false
+---
+# Idea Generator Feature Documentation
+
+## Overview
+The Idea Generator is a key feature of our application that allows users to generate creative ideas using AI-powered techniques. The primary implementation uses Walt Disney's creative method, which approaches idea generation from three different perspectives: Dreamer, Realist, and Critic.
+
+## Requirements
+
+### Core Functionality
+- [x] Support the Disney Method for idea generation
+- [x] Generate multiple ideas based on user prompts
+- [x] Evaluate and score ideas using multi-agent approach
+- [x] Allow users to save interesting ideas
+- [x] Store ideas in localStorage for unauthenticated users
+- [ ] Migrate saved ideas to user account upon authentication
+- [ ] Support idea discussion in a separate chat interface
+
+### User Interface
+- [x] Method selection dropdown with descriptions
+- [x] Chat interface for interacting with the AI
+- [x] Idea cards with scores and save functionality
+- [x] Display of saved ideas in the sidebar
+- [ ] Detailed view of idea evaluations
+- [ ] "Discuss" functionality for saved ideas
+
+### Technical Implementation
+- [x] Multi-agent architecture using AI SDK
+- [x] API endpoint for idea generation
+- [x] Typed interfaces for ideas and messages
+- [x] Local storage integration
+- [ ] Zustand store for state management
+- [ ] Component decomposition
+
+## Walt Disney's Method Implementation
+
+The Disney Method involves three distinct roles:
+
+1. **Dreamer**:
+   - Thinks broadly and without constraints
+   - Generates creative and innovative ideas
+   - Focuses on possibilities rather than limitations
+
+2. **Realist**:
+   - Evaluates ideas from a practical standpoint
+   - Considers resources, implementation, and feasibility
+   - Scores ideas based on practicality (1-10)
+
+3. **Critic**:
+   - Identifies potential weaknesses and risks
+   - Suggests improvements and refinements
+   - Scores ideas based on robustness (1-10)
+
+## Implementation Architecture
+
+### Components Structure
+- **IdeaGenerator**: Main container component
+  - **MethodSelector**: Selection of idea generation methods
+  - **ChatInterface**: Interaction with AI and display of messages
+    - **IdeaCard**: Display of generated ideas with score and actions
+  - **SavedIdeasList**: Display of saved ideas
+
+### State Management (Zustand)
+- `method`: Selected idea generation method
+- `messages`: Chat history
+- `savedIdeas`: User's saved ideas
+- `isLoading`: Loading state during idea generation
+
+### API Endpoints
+- `POST /api/generate`: Generate ideas based on prompt and method
+  - Parameters: `prompt`, `method`
+  - Response: Generated ideas with scores and evaluations
+
+### Data Flow
+1. User selects a method and sends a prompt
+2. Frontend sends request to API
+3. Backend processes request using three AI agents in sequence:
+   - Dreamer generates initial ideas
+   - Realist evaluates feasibility
+   - Critic identifies issues and suggests improvements
+4. Combined results are returned to frontend
+5. Ideas are displayed to user in chat interface
+6. User can save ideas to localStorage
+
+## References
+- [AI SDK Documentation](mdc:https:/sdk.vercel.ai/docs/foundations/agents)
+- [AI SDK Chatbot Tools](mdc:https:/sdk.vercel.ai/docs/ai-sdk-ui/chatbot-tool-usage)
+- [Walt Disney Method Description](mdc:https:/www.mindtools.com/a3mi00v/the-disney-creative-strategy) 
