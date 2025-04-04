@@ -1,103 +1,124 @@
-import Image from "next/image";
+'use client';
+
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { 
+  Container, 
+  Typography, 
+  Button,
+  Paper,
+} from '@mui/material';
+import { GridContainer, GridItem } from '@/components/CustomGrid';
+import Link from 'next/link';
+
+// Fallback translations for home page
+const fallbackText = {
+  home: {
+    title: "Welcome to IdeaBulb",
+    subtitle: "Turn your inspirations into reality",
+    getStarted: "Get Started",
+    features: {
+      title: "Features",
+      ideaGeneration: {
+        title: "Idea Generation",
+        description: "Generate ideas using AI and creative techniques"
+      },
+      organization: {
+        title: "Organization",
+        description: "Organize and categorize your ideas efficiently"
+      },
+      collaboration: {
+        title: "Collaboration",
+        description: "Share and collaborate on ideas with others"
+      }
+    }
+  }
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { t, i18n, ready } = useTranslation();
+  
+  // Function to get translations with fallback
+  const getTranslation = (key: string, fallback: string) => {
+    if (!ready || !i18n.exists(key)) return fallback;
+    return t(key);
+  };
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  return (
+    <main>
+      {/* Hero section */}
+      <Container sx={{ py: 8 }}>
+        <GridContainer spacing={6} alignItems="center">
+          <GridItem xs={12} md={6}>
+            <Typography variant="h1" component="h1" sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
+              {getTranslation('home.title', fallbackText.home.title)}
+            </Typography>
+            <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
+              {getTranslation('home.subtitle', fallbackText.home.subtitle)}
+            </Typography>
+            <Button 
+              variant="contained" 
+              size="large" 
+              component={Link} 
+              href="/app"
+              sx={{
+                py: 1.5,
+                px: 4,
+                fontSize: '1.1rem',
+              }}
+            >
+              {getTranslation('home.getStarted', fallbackText.home.getStarted)}
+            </Button>
+          </GridItem>
+          <GridItem xs={12} md={6}>
+            <div style={{ width: '100%', height: '300px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+              {/* Placeholder for hero image */}
+            </div>
+          </GridItem>
+        </GridContainer>
+      </Container>
+
+      {/* Features section */}
+      <Container maxWidth="lg" sx={{ mb: 8 }}>
+        <Typography variant="h2" component="h2" sx={{ mb: 6, textAlign: 'center' }}>
+          {getTranslation('home.features.title', fallbackText.home.features.title)}
+        </Typography>
+        
+        <GridContainer spacing={4}>
+          <GridItem xs={12} md={4}>
+            <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+              <Typography variant="h6" gutterBottom>
+                {getTranslation('home.features.ideaGeneration.title', fallbackText.home.features.ideaGeneration.title)}
+              </Typography>
+              <Typography variant="body1">
+                {getTranslation('home.features.ideaGeneration.description', fallbackText.home.features.ideaGeneration.description)}
+              </Typography>
+            </Paper>
+          </GridItem>
+          
+          <GridItem xs={12} md={4}>
+            <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+              <Typography variant="h6" gutterBottom>
+                {getTranslation('home.features.organization.title', fallbackText.home.features.organization.title)}
+              </Typography>
+              <Typography variant="body1">
+                {getTranslation('home.features.organization.description', fallbackText.home.features.organization.description)}
+              </Typography>
+            </Paper>
+          </GridItem>
+          
+          <GridItem xs={12} md={4}>
+            <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+              <Typography variant="h6" gutterBottom>
+                {getTranslation('home.features.collaboration.title', fallbackText.home.features.collaboration.title)}
+              </Typography>
+              <Typography variant="body1">
+                {getTranslation('home.features.collaboration.description', fallbackText.home.features.collaboration.description)}
+              </Typography>
+            </Paper>
+          </GridItem>
+        </GridContainer>
+      </Container>
+    </main>
   );
 }

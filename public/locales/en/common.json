@@ -1,0 +1,34 @@
+{
+  "app": {
+    "name": "Idea Generator",
+    "slogan": "Generate innovative ideas with AI"
+  },
+  "nav": {
+    "home": "Home",
+    "app": "Generate Ideas",
+    "myIdeas": "My Ideas",
+    "signin": "Sign In",
+    "signout": "Sign Out"
+  },
+  "promo": {
+    "title": "Unleash Your Creativity",
+    "description": "Struggling with inspiration? Let our AI-powered idea generator help you discover new concepts for your projects.",
+    "cta": "Get Started"
+  },
+  "auth": {
+    "telegramLogin": "Login with Telegram",
+    "signInTitle": "Sign In"
+  },
+  "generator": {
+    "title": "Idea Generator",
+    "selectMethod": "Select a method:",
+    "generateButton": "Generate Ideas"
+  },
+  "ideas": {
+    "title": "My Ideas",
+    "noIdeas": "You haven't generated any ideas yet.",
+    "create": "Create New Idea",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+} 
