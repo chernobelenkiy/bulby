@@ -11,9 +11,11 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
   const isPublicPage = request.nextUrl.pathname === '/';
+  const isIdeaGeneratorPage = request.nextUrl.pathname === '/app';
+  const isProtectedPage = !isAuthPage && !isPublicPage && !isIdeaGeneratorPage;
 
   // If the user is not authenticated and tries to access a protected route
-  if (!isAuthenticated && !isAuthPage && !isPublicPage) {
+  if (!isAuthenticated && isProtectedPage) {
     return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
 

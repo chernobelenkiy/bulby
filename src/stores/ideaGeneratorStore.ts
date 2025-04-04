@@ -1,8 +1,37 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChatMessage, GeneratedIdea } from '@/types/ideas';
+import i18n from '@/lib/i18n';
+
+// Define Method interface
+export interface Method {
+  id: string;
+  nameKey?: string;
+  descriptionKey?: string;
+  name: string;
+  description: string;
+}
+
+// Methods data for idea generation
+export const METHODS: Method[] = [
+  // { id: 'brainstorming', name: 'Brainstorming', description: 'Generate as many ideas as possible without judgment' },
+  // { id: 'scamper', name: 'SCAMPER', description: 'Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse' },
+  // { id: 'sixHats', name: 'Six Thinking Hats', description: 'Look at the problem from different perspectives' },
+  // { id: 'mindMapping', name: 'Mind Mapping', description: 'Visually organize information to find connections' },
+  { 
+    id: 'disney', 
+    nameKey: 'generator.methods.disney.name',
+    descriptionKey: 'generator.methods.disney.description',
+    // These are fallbacks in case the translation is not found
+    name: 'Disney Method', 
+    description: 'Analyze ideas from three perspectives: Dreamer, Realist, and Critic' 
+  },
+];
 
 interface IdeaGeneratorState {
+  // Available methods for idea generation
+  methods: Method[];
+  
   // Selected method for idea generation
   selectedMethod: string;
   setSelectedMethod: (method: string) => void;
@@ -28,11 +57,14 @@ interface IdeaGeneratorState {
 export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
   persist(
     (set, get) => ({
+      // Available methods
+      methods: METHODS,
+
       // Initial state
       selectedMethod: '',
       messages: [
         { 
-          text: "Hi there! I'm your AI assistant. I can help you generate ideas using different methods. Select a method to get started.", 
+          text: i18n.t('generator.welcome'),
           isUser: false 
         },
       ],
@@ -47,11 +79,17 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
         const methodDetails = METHODS.find(m => m.id === method);
         if (methodDetails) {
           const { messages } = get();
+          const methodName = methodDetails.nameKey ? i18n.t(methodDetails.nameKey) : methodDetails.name;
+          const methodDescription = methodDetails.descriptionKey ? i18n.t(methodDetails.descriptionKey) : methodDetails.description;
+          
           set({
             messages: [
               ...messages, 
               {
-                text: `You've selected the ${methodDetails.name} method. ${methodDetails.description}. What topic would you like to generate ideas for?`,
+                text: i18n.t('generator.methodSelected', {
+                  methodName,
+                  methodDescription
+                }),
                 isUser: false
               }
             ]
@@ -129,21 +167,21 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
           if (response.ok) {
             // Add AI response with generated ideas
             addMessage({
-              text: `Here are some ideas based on your prompt: "${prompt}"`,
+              text: i18n.t('generator.ideasGenerated', { prompt }),
               isUser: false,
               ideas: data.ideas
             });
           } else {
             // Handle error response
             addMessage({
-              text: `Sorry, I encountered an error: ${data.error || 'Unknown error'}`,
+              text: i18n.t('generator.error', { error: data.error || 'Unknown error' }),
               isUser: false
             });
           }
         } catch (error) {
           console.error('Error generating ideas:', error);
           addMessage({
-            text: 'Sorry, there was an error processing your request. Please try again.',
+            text: i18n.t('generator.generalError'),
             isUser: false
           });
         } finally {
@@ -156,13 +194,4 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
       partialize: (state) => ({ savedIdeas: state.savedIdeas }),
     }
   )
-);
-
-// Mock data for idea generation methods
-const METHODS = [
-  { id: 'brainstorming', name: 'Brainstorming', description: 'Generate as many ideas as possible without judgment' },
-  { id: 'scamper', name: 'SCAMPER', description: 'Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse' },
-  { id: 'sixHats', name: 'Six Thinking Hats', description: 'Look at the problem from different perspectives' },
-  { id: 'mindMapping', name: 'Mind Mapping', description: 'Visually organize information to find connections' },
-  { id: 'disney', name: 'Disney Method', description: 'Analyze ideas from three perspectives: Dreamer, Realist, and Critic' },
-]; 
+); 

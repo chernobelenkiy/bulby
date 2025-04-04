@@ -7,59 +7,62 @@ import {
   MenuItem,
   Card,
   CardContent,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Box,
+  useTheme
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore, Method } from '@/stores/ideaGeneratorStore';
 
-// Method data 
-const METHODS = [
-  { id: 'brainstorming', name: 'Brainstorming', description: 'Generate as many ideas as possible without judgment' },
-  { id: 'scamper', name: 'SCAMPER', description: 'Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse' },
-  { id: 'sixHats', name: 'Six Thinking Hats', description: 'Look at the problem from different perspectives' },
-  { id: 'mindMapping', name: 'Mind Mapping', description: 'Visually organize information to find connections' },
-  { id: 'disney', name: 'Disney Method', description: 'Analyze ideas from three perspectives: Dreamer, Realist, and Critic' },
-];
-
-interface MethodSelectorProps {
-  fallbackText?: {
-    title: string;
-    selectMethod: string;
-  };
-}
-
-export default function MethodSelector({ fallbackText }: MethodSelectorProps) {
-  const { t, i18n, ready } = useTranslation();
+export default function MethodSelector() {
+  const { t } = useTranslation();
+  const theme = useTheme();
   const selectedMethod = useIdeaGeneratorStore(state => state.selectedMethod);
   const setSelectedMethod = useIdeaGeneratorStore(state => state.setSelectedMethod);
-
-  // Function to get translations with fallback
-  const getTranslation = (key: string, fallback: string) => {
-    if (!ready || !i18n.exists(key)) return fallback;
-    return t(key);
-  };
+  const methods = useIdeaGeneratorStore(state => state.methods);
 
   const handleMethodChange = (event: SelectChangeEvent<string>) => {
     setSelectedMethod(event.target.value);
   };
 
+  // Find the selected method object
+  const selectedMethodObj = methods.find(m => m.id === selectedMethod);
+
   return (
-    <Paper sx={{ p: 3, height: '100%' }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        {getTranslation(
-          'generator.title', 
-          fallbackText?.title || "Idea Generator"
-        )}
-      </Typography>
+    <Paper 
+      elevation={3}
+      sx={{ 
+        p: 3, 
+        height: '100%',
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
+      <Box sx={{ width: '100%', textAlign: 'center', mb: 2 }}>
+        <Typography 
+          variant="h5" 
+          component="h2" 
+          gutterBottom
+          fontWeight="bold"
+          color={theme.palette.primary.main}
+        >
+          {t('generator.title')}
+        </Typography>
+        
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          {t('generator.selectMethod')}
+        </Typography>
+      </Box>
       
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        {getTranslation(
-          'generator.selectMethod', 
-          fallbackText?.selectMethod || "Select a method:"
-        )}
-      </Typography>
-      
-      <FormControl fullWidth sx={{ mb: 3 }}>
+      <FormControl 
+        fullWidth 
+        sx={{ 
+          mb: 3,
+          maxWidth: '90%'
+        }}
+      >
         <InputLabel id="method-select-label">Method</InputLabel>
         <Select
           labelId="method-select-label"
@@ -67,23 +70,46 @@ export default function MethodSelector({ fallbackText }: MethodSelectorProps) {
           value={selectedMethod}
           label="Method"
           onChange={handleMethodChange}
+          sx={{
+            borderRadius: 1,
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.palette.primary.light
+            }
+          }}
         >
-          {METHODS.map(method => (
+          {methods.map((method: Method) => (
             <MenuItem key={method.id} value={method.id}>
-              {method.name}
+              {method.nameKey ? t(method.nameKey) : method.name}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
       
-      {selectedMethod && (
-        <Card variant="outlined">
+      {selectedMethod && selectedMethodObj && (
+        <Card 
+          variant="outlined" 
+          sx={{ 
+            width: '100%',
+            maxWidth: '90%',
+            borderRadius: 2,
+            borderColor: theme.palette.primary.light,
+            boxShadow: 1
+          }}
+        >
           <CardContent>
-            <Typography variant="h6" gutterBottom>
-              {METHODS.find(m => m.id === selectedMethod)?.name}
+            <Typography 
+              variant="h6" 
+              gutterBottom
+              color={theme.palette.primary.main}
+            >
+              {selectedMethodObj.nameKey 
+                ? t(selectedMethodObj.nameKey) 
+                : selectedMethodObj.name}
             </Typography>
             <Typography variant="body2">
-              {METHODS.find(m => m.id === selectedMethod)?.description}
+              {selectedMethodObj.descriptionKey 
+                ? t(selectedMethodObj.descriptionKey) 
+                : selectedMethodObj.description}
             </Typography>
           </CardContent>
         </Card>
