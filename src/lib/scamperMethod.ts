@@ -3,15 +3,26 @@ import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
 
-// Schema for the SCAMPER ideas
-const scamperSchema = z.object({
+// Schemas for agent responses
+const scamperGeneratorSchema = z.object({
   ideas: z.array(
     z.object({
       title: z.string(),
       description: z.string(),
-      score: z.number().min(1).max(10),
       scamperTechnique: z.string(),
+      notes: z.string().optional(),
+    })
+  ),
+  reasoning: z.string(),
+});
+
+const implementationSchema = z.object({
+  evaluations: z.array(
+    z.object({
+      title: z.string(),
+      score: z.number().min(1).max(10),
       implementation: z.string(),
+      challenges: z.string(),
     })
   ),
   reasoning: z.string(),
@@ -19,6 +30,10 @@ const scamperSchema = z.object({
 
 /**
  * Implements SCAMPER method to transform existing ideas
+ * Uses a Multi-Agent Collaboration approach with specialized agents:
+ * 1. SCAMPER Generator - creates ideas using specific SCAMPER techniques
+ * 2. Implementation Evaluator - assesses feasibility and implementation details
+ * 
  * SCAMPER stands for:
  * - Substitute
  * - Combine
@@ -43,7 +58,7 @@ export async function generateIdeasUsingScamperMethod(
     ? 'Генерируй идеи на русском языке.'
     : 'Generate ideas in English.';
   
-  // Generate ideas using the SCAMPER method
+  // 1. SCAMPER Generator agent - creates ideas using specific techniques
   const { object: scamperResponse } = await generateObject({
     model: openai('gpt-4o'),
     system: `You are an expert in the SCAMPER method for idea generation and transformation.
@@ -56,26 +71,53 @@ export async function generateIdeasUsingScamperMethod(
     - Eliminate: Remove elements or simplify concepts
     - Reverse: Flip aspects or consider opposite approaches
     
-    Generate 7 creative ideas based on the user's prompt, using one SCAMPER technique for each idea.
+    Generate 7 creative ideas based on the user's prompt, using at least one SCAMPER technique for each idea.
     For each idea, provide:
     1. A descriptive title
-    2. A detailed description
-    3. A score from 1-10 reflecting feasibility and innovation
-    4. Which SCAMPER technique was primarily used
-    5. Implementation notes
+    2. A detailed description 
+    3. Which SCAMPER technique was primarily used (clearly label this)
+    4. Optional additional notes about the idea
+    
+    Make sure to use different SCAMPER techniques across your ideas.
     ${languageInstruction}`,
     prompt,
-    schema: scamperSchema,
+    schema: scamperGeneratorSchema,
   });
 
-  // Process the ideas
-  const finalIdeas = scamperResponse.ideas.map(idea => {
+  // Only process the top 5 ideas to avoid overwhelming the second agent
+  const topIdeas = scamperResponse.ideas.slice(0, 5);
+
+  // 2. Implementation Evaluator agent - assesses feasibility and implementation
+  const { object: implementationResponse } = await generateObject({
+    model: openai('gpt-4o'),
+    system: `You are an expert in evaluating the practicality and implementation of innovative ideas.
+    Your job is to assess each idea based on its feasibility, implementation path, and potential challenges.
+    For each idea, provide:
+    1. A score from 1-10 reflecting overall feasibility and innovation value
+    2. Implementation details - concrete steps to realize this idea
+    3. Potential challenges and how to overcome them
+    Be honest and thorough in your assessment.
+    ${languageInstruction}`,
+    prompt: `Evaluate these SCAMPER-generated ideas:
+    ${topIdeas.map(idea => 
+      `- ${idea.title}: ${idea.description} (SCAMPER Technique: ${idea.scamperTechnique})`
+    ).join('\n')}`,
+    schema: implementationSchema,
+  });
+
+  // Combine and process the results
+  const finalIdeas: GeneratedIdea[] = topIdeas.map(idea => {
+    const evaluation = implementationResponse.evaluations.find(
+      evaluation => evaluation.title === idea.title
+    );
+
     return {
       title: idea.title,
       description: idea.description,
-      score: idea.score,
-      dreamerNotes: idea.scamperTechnique,
-      realistNotes: idea.implementation,
+      score: evaluation?.score || 5,
+      dreamerNotes: `SCAMPER Technique: ${idea.scamperTechnique}${idea.notes ? `\n\n${idea.notes}` : ''}`,
+      realistNotes: evaluation?.implementation,
+      criticNotes: evaluation?.challenges,
     };
   });
 

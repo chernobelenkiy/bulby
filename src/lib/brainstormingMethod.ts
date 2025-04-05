@@ -3,14 +3,24 @@ import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
 
-// Schema for the brainstorming ideas
-const brainstormingSchema = z.object({
+// Schemas for agent responses
+const ideaGeneratorSchema = z.object({
   ideas: z.array(
     z.object({
       title: z.string(),
       description: z.string(),
+      notes: z.string().optional(),
+    })
+  ),
+  reasoning: z.string(),
+});
+
+const evaluatorSchema = z.object({
+  evaluations: z.array(
+    z.object({
+      title: z.string(),
       score: z.number().min(1).max(10),
-      innovationFactor: z.string(),
+      innovationFactors: z.string(),
       applicationAreas: z.string(),
     })
   ),
@@ -19,6 +29,9 @@ const brainstormingSchema = z.object({
 
 /**
  * Implements Brainstorming method to generate a wide variety of ideas
+ * Uses a Multi-Agent Collaboration approach with specialized agents:
+ * 1. Idea Generator - focuses on quantity and diversity of ideas
+ * 2. Evaluator - rates ideas based on innovation and application areas
  * 
  * @param prompt User's prompt for idea generation
  * @param language Language code for generating ideas (e.g., 'en', 'ru')
@@ -35,32 +48,54 @@ export async function generateIdeasUsingBrainstormingMethod(
     ? 'Генерируй идеи на русском языке.'
     : 'Generate ideas in English.';
   
-  // Generate multiple ideas using the brainstorming technique
-  const { object: brainstormingResponse } = await generateObject({
+  // 1. Idea Generator agent - focuses on quantity and diversity
+  const { object: generatorResponse } = await generateObject({
     model: openai('gpt-4o'),
     system: `You are an expert in the brainstorming technique for idea generation.
-    Your goal is to generate a wide variety of creative and innovative ideas without any filtering or judgment.
-    Quantity is more important than quality at this stage.
+    Your goal is to generate as many creative and innovative ideas as possible without any filtering or judgment.
+    Remember that in brainstorming, quantity is more important than quality at this stage.
     Generate at least 8 diverse ideas based on the user's prompt.
     For each idea, provide:
     1. A catchy title
     2. A concise description
-    3. A score from 1-10 reflecting how innovative the idea is
-    4. Innovation factor - what makes this idea stand out
-    5. Possible application areas
+    3. Optional notes on what makes this idea interesting or unique
     ${languageInstruction}`,
     prompt,
-    schema: brainstormingSchema,
+    schema: ideaGeneratorSchema,
   });
 
-  // Process the ideas
-  const finalIdeas: GeneratedIdea[] = brainstormingResponse.ideas.map(idea => {
+  // Only process the top 6 ideas to avoid overwhelming the evaluator
+  const topIdeas = generatorResponse.ideas.slice(0, 6);
+
+  // 2. Evaluator agent - assesses innovation and application areas
+  const { object: evaluatorResponse } = await generateObject({
+    model: openai('gpt-4o'),
+    system: `You are an expert in evaluating innovative ideas.
+    Your job is to assess each idea based on its innovation factor and potential application areas.
+    For each idea, provide:
+    1. A score from 1-10 reflecting the overall quality and innovation
+    2. Innovation factors - what makes this idea innovative or unique
+    3. Potential application areas where this idea could be implemented
+    Be honest and critical in your evaluations.
+    ${languageInstruction}`,
+    prompt: `Evaluate these brainstormed ideas:
+    ${topIdeas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
+    schema: evaluatorSchema,
+  });
+
+  // Combine and process the results
+  const finalIdeas: GeneratedIdea[] = topIdeas.map(idea => {
+    const evaluation = evaluatorResponse.evaluations.find(
+      evaluation => evaluation.title === idea.title
+    );
+
     return {
       title: idea.title,
       description: idea.description,
-      score: idea.score,
-      dreamerNotes: idea.innovationFactor,
-      realistNotes: idea.applicationAreas,
+      score: evaluation?.score || 5,
+      dreamerNotes: idea.notes,
+      realistNotes: evaluation?.applicationAreas,
+      criticNotes: evaluation?.innovationFactors,
     };
   });
 
