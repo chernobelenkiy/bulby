@@ -32,8 +32,8 @@ The Idea Generator is a key feature of our application that allows users to gene
 - [x] API endpoint for idea generation
 - [x] Typed interfaces for ideas and messages
 - [x] Local storage integration
-- [ ] Zustand store for state management
-- [ ] Component decomposition
+- [x] Zustand store for state management
+- [x] Component decomposition
 
 ## Walt Disney's Method Implementation
 
