@@ -1,53 +1,38 @@
-'use client';
+import { Container, Paper, Typography, Box } from '@mui/material';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import TelegramLoginContainer from './TelegramLoginContainer';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
-import { useTranslation } from 'react-i18next';
-import { Container, Typography, Box, Paper, Button } from '@mui/material';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import { signIn } from 'next-auth/react';
+export default async function SignInPage() {
+  // Check if user is already signed in
+  const session = await getServerSession(authOptions);
+  
+  if (session) {
+    redirect('/');
+  }
 
-export default function SignIn() {
-  const { t } = useTranslation();
-
-  // For now, this is a dummy login with Telegram
-  const handleTelegramLogin = () => {
-    // In a real application, you would implement Telegram authentication
-    // For now, let's just simulate a login with dummy values
-    signIn('credentials', {
-      telegramId: '123456789',
-      name: 'Test User',
-      callbackUrl: '/app'
-    });
-  };
+  // Get Telegram bot name from environment
+  const botName = process.env.TELEGRAM_BOT_NAME;
+  
+  if (!botName) {
+    console.error('TELEGRAM_BOT_NAME environment variable is not set');
+  }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Typography component="h1" variant="h4" gutterBottom>
-          {t('auth.signInTitle')}
+    <Container maxWidth="sm" sx={{ pt: 8, pb: 6 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography component="h1" variant="h4" align="center" gutterBottom>
+          Sign In
         </Typography>
         
-        <Box sx={{ mt: 3 }}>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<TelegramIcon />}
-            onClick={handleTelegramLogin}
-            sx={{ 
-              bgcolor: '#0088cc', 
-              '&:hover': { bgcolor: '#0077b5' },
-              py: 1.5
-            }}
-          >
-            {t('auth.telegramLogin')}
-          </Button>
+        <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
+          Sign in with Telegram to continue
+        </Typography>
+        
+        {/* Telegram login section */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+          <TelegramLoginContainer botName={botName || ''} />
         </Box>
       </Paper>
     </Container>

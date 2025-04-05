@@ -16,6 +16,8 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
 import LanguageSwitcher from './LanguageSwitcher';
+import UserAvatar from './UserAvatar';
+import { useAuth } from '@/hooks/useAuth';
 
 // Fallback text for navigation items in case translations aren't loaded
 const fallbackNavItems = {
@@ -30,6 +32,7 @@ const fallbackAppName = 'IdeaBulb';
 
 export default function Navigation() {
   const { t, i18n, ready } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   // Function to get translations with fallback
@@ -155,19 +158,22 @@ export default function Navigation() {
             </Button>
           </Box>
 
-          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
             {/* Language Switcher */}
             <LanguageSwitcher />
             
-            {/* Login button */}
-            <Button 
-              color="inherit"
-              component={Link}
-              href="/auth"
-              sx={{ ml: 1 }}
-            >
-              {getTranslation('nav.signin', fallbackNavItems.signin)}
-            </Button>
+            {/* User Avatar (when logged in) or Login Button (when not) */}
+            {isAuthenticated ? (
+              <UserAvatar />
+            ) : (
+              <Button 
+                color="inherit"
+                component={Link}
+                href="/auth/signin"
+              >
+                {getTranslation('nav.signin', fallbackNavItems.signin)}
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

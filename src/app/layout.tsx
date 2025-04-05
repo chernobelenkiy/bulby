@@ -1,29 +1,26 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import type { Metadata } from "next";
+import { Inter, Roboto_Mono } from "next/font/google";
 import AppWrapper from "@/components/AppWrapper";
+import { NextAuthProvider } from "@/app/providers";
+import UserProvider from "@/components/providers/UserProvider";
 
 // Don't import i18n initialization here - we'll use the provider component
 
-const inter = Inter({
+// Define fonts
+const inter = Inter({ 
   subsets: ["latin"],
-  display: "swap",
+  variable: "--font-inter",
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const robotoMono = Roboto_Mono({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-roboto-mono",
 });
 
 export const metadata: Metadata = {
-  title: "Idea Generator - Unleash Your Creativity",
-  description: "Generate innovative ideas with our AI-powered platform",
+  title: "Idea Generator",
+  description: "Generate creative ideas with AI",
 };
 
 export default function RootLayout({
@@ -33,10 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AppWrapper>
-          {children}
-        </AppWrapper>
+      <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
+        <NextAuthProvider>
+          <UserProvider>
+            <AppWrapper>
+              {children}
+            </AppWrapper>
+          </UserProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

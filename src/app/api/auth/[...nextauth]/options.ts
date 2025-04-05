@@ -2,33 +2,64 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import { AuthService } from "@/lib/auth-service";
+import { AuthDataValidator } from "@/lib/telegram-auth";
+import { ITelegramUser } from "@/components/auth/TelegramLoginButton";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
-      name: "Telegram",
-      credentials: {
-        telegramId: { label: "Telegram ID", type: "text" },
-        name: { label: "Name", type: "text" },
-      },
+      id: "telegram-login",
+      name: "Telegram Login",
+      credentials: {},
       async authorize(credentials) {
-        if (!credentials?.telegramId) {
+        try {
+          const telegramData = credentials as unknown as ITelegramUser;
+
+          if (!telegramData?.id || !telegramData?.first_name || !telegramData?.hash) {
+            console.error("Missing required Telegram data");
+            return null;
+          }
+
+          // Validate the Telegram data
+          const validator = new AuthDataValidator({
+            botToken: process.env.TELEGRAM_BOT_TOKEN as string,
+          });
+
+          const authData = new Map<string, string | number | undefined>([
+            ["id", telegramData.id],
+            ["first_name", telegramData.first_name],
+            ["last_name", telegramData.last_name],
+            ["username", telegramData.username],
+            ["photo_url", telegramData.photo_url],
+            ["auth_date", telegramData.auth_date],
+            ["hash", telegramData.hash],
+          ]);
+
+          try {
+            // Skip validation in development environment to make testing easier
+            if (process.env.NODE_ENV !== "development") {
+              await validator.validate(authData);
+            }
+            
+            // Create or update the user
+            const user = await AuthService.createOrUpdateTelegramUser(telegramData);
+            
+            // Return user for session
+            return {
+              id: user.id,
+              name: user.name,
+              image: user.image,
+            };
+          } catch (error) {
+            console.error("Telegram validation error:", error);
+            return null;
+          }
+        } catch (error) {
+          console.error("Error in Telegram login:", error);
           return null;
         }
-
-        // For now, we'll just create or find a user with the provided telegramId
-        // In a real implementation, you'd validate the telegram auth
-        const user = await prisma.user.upsert({
-          where: { telegramId: credentials.telegramId },
-          update: { name: credentials.name },
-          create: {
-            telegramId: credentials.telegramId,
-            name: credentials.name,
-          },
-        });
-
-        return user;
       },
     }),
   ],
@@ -37,6 +68,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
+    error: "/auth/signin", // Redirect error to sign in page
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
@@ -48,10 +80,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user && token.sub) {
-        session.user = {
-          ...session.user,
-          id: token.sub
-        };
+        session.user.id = token.sub;
       }
       return session;
     },
