@@ -35,7 +35,7 @@ export default function AppWrapper({ children }: AppWrapperProps) {
   }, []);
 
   // Render nothing until i18n is initialized
-  if (!i18nInitialized && typeof window !== 'undefined') {
+  if (!i18nInitialized) {
     return <div style={{ visibility: 'hidden' }} />;
   }
 

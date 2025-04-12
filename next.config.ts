@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverComponentsExternalPackages: ['@telegram-apps/sdk-react'],
 };
 
 export default nextConfig;

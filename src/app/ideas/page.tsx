@@ -1,3 +1,4 @@
+"use client";
 import IdeasClient from './IdeasClient';
 
 export default function IdeasPage() {
