@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react';
 import theme from '@/lib/theme';
 import Navigation from '@/components/Navigation';
 import { I18nextProvider } from 'react-i18next';
+import UserProvider from '@/components/providers/UserProvider';
 import i18n from '@/lib/i18n';
 
 // Initialize i18n on client side only - must import this AFTER i18n import
@@ -42,9 +43,11 @@ export default function AppWrapper({ children }: AppWrapperProps) {
     <SessionProvider>
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Navigation />
-          <main>{children}</main>
+          <UserProvider>
+            <CssBaseline />
+            <Navigation />
+            <main>{children}</main>
+          </UserProvider>
         </ThemeProvider>
       </I18nextProvider>
     </SessionProvider>

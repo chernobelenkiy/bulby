@@ -35,11 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
-          <UserProvider>
-            <AppWrapper>
-              {children}
-            </AppWrapper>
-          </UserProvider>
+          <AppWrapper>
+            {children}
+          </AppWrapper>
       </body>
     </html>
   );
