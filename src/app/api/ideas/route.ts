@@ -1,20 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Idea } from '@/types/ideas';
-
-// Interface for idea with string date (for storage)
-interface StoredIdea extends Omit<Idea, 'createdAt'> {
-  createdAt: string;
-  dreamerNotes?: string;
-  realistNotes?: string;
-  criticNotes?: string;
-  score?: number;
-}
-
-// Simple in-memory ideas storage for demo purposes
-// In a real app, you would use a database
-// Making this global so it can be accessed from [id] routes
-export const ideas: StoredIdea[] = [];
 
 export async function GET() {
   try {
