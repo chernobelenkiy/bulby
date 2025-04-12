@@ -1,12 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(
-  request: Request,
-  context: { params: { id: string } }
-) {
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const id = context.params.id;
+    const id = params.id;
     
     // Find the idea by ID in the database
     const idea = await prisma.idea.findUnique({
@@ -49,12 +52,9 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  context: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const id = context.params.id;
+    const id = params.id;
     const body = await request.json();
     
     // Check if the idea exists
@@ -112,12 +112,9 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const id = context.params.id;
+    const id = params.id;
     
     // Check if the idea exists
     const existingIdea = await prisma.idea.findUnique({
