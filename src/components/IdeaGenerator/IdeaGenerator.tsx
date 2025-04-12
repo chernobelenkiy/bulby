@@ -1,3 +1,4 @@
+"use client";
 import { Container, Box, useTheme } from '@mui/material';
 import MethodSelector from './MethodSelector';
 import ChatInterface from './ChatInterface';

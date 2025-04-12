@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material';

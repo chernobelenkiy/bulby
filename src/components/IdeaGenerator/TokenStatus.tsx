@@ -1,3 +1,4 @@
+"use client";
 import { Box, Typography, Tooltip, Chip } from '@mui/material';
 import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
 import { useTranslation } from 'react-i18next';
