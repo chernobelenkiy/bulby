@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/app/server/user';
-import { validate, parse } from '@telegram-apps/init-data-node';
+import { validate3rd, parse } from '@telegram-apps/init-data-node';
 import { User } from '@/types/user';
 
 // Define interface for parsed Telegram user data
@@ -28,12 +28,17 @@ interface ParsedTelegramData {
  */
 export async function GET(request: Request) {
   try {
+    // Extract auth header - expected format: "tma <initData>"
     const authHeader = request.headers.get('Authorization');
+    let telegramInitData = null;
     
-    if (authHeader) {
-      const authData = authHeader.split(' ')[1];
-      console.log('Authenticating via Telegram Mini App initData');
-      
+    // Process the auth header if available
+    if (authHeader?.startsWith('tma ')) {
+      telegramInitData = authHeader.substring(4);
+    }
+    
+    // Proceed with Telegram authentication if initData is available
+    if (telegramInitData) {
       try {
         // Get bot token from environment variables
         const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -44,27 +49,32 @@ export async function GET(request: Request) {
             error: 'Server configuration error' 
           }, { status: 500 });
         }
-        console.log('authData', authData);
         
-        // Validate the initData using the official Telegram package
-        validate(authData, botToken, {
-          // Consider init data valid for 1 hour from creation
-          expiresIn: 3600,
-        });
+        // Extract bot ID from the token (number before the colon)
+        const botId = parseInt(botToken.split(':')[0]);
+        
+        // Validate the initData using Ed25519 (modern Telegram method)
+        await validate3rd(telegramInitData, botId, { expiresIn: 3600 });
         
         // Parse the initData to extract user information
-        const parsedData = parse(authData);
-        console.log('Telegram data validated successfully, user:', parsedData.user?.id);
+        const parsedData = parse(telegramInitData);
         
         // Get or create user based on Telegram data
-        const user = await getUserFromTelegramData(parsedData);
-        
-        if (user) {
-          return NextResponse.json({ user });
+        if (parsedData.user) {
+          const user = await getUserFromTelegramData(parsedData);
+          
+          if (user) {
+            return NextResponse.json({ user });
+          } else {
+            return NextResponse.json({ 
+              user: null, 
+              error: 'Could not create user from Telegram data' 
+            }, { status: 401 });
+          }
         } else {
           return NextResponse.json({ 
             user: null, 
-            error: 'Could not create user from Telegram data' 
+            error: 'No user data found in Telegram initData' 
           }, { status: 401 });
         }
       } catch (error) {
@@ -76,16 +86,13 @@ export async function GET(request: Request) {
       }
     }
     
-    // Standard session authentication
-    console.log('Authenticating via session');
+    // Standard session authentication if no Telegram data
     const user = await getCurrentUser();
     
     if (!user) {
-      console.log('Session authentication failed');
       return NextResponse.json({ user: null }, { status: 401 });
     }
     
-    console.log('Session authentication successful');
     return NextResponse.json({ user });
   } catch (error) {
     console.error('Error in user API:', error);
@@ -104,7 +111,6 @@ async function getUserFromTelegramData(parsedData: ParsedTelegramData): Promise<
     const { user } = parsedData;
     
     if (!user || !user.id) {
-      console.error('No user data found in Telegram initData');
       return null;
     }
     
@@ -129,8 +135,6 @@ async function getUserFromTelegramData(parsedData: ParsedTelegramData): Promise<
     
     // If user doesn't exist, create a new one
     if (!dbUser) {
-      console.log('Creating new user for Telegram ID:', telegramId);
-      
       const name = user.first_name + (user.last_name ? ` ${user.last_name}` : '');
       
       dbUser = await prisma.user.create({
@@ -150,10 +154,6 @@ async function getUserFromTelegramData(parsedData: ParsedTelegramData): Promise<
           telegramData: true,
         }
       });
-      
-      console.log('New user created:', dbUser.id);
-    } else {
-      console.log('Existing user found:', dbUser.id);
     }
     
     return dbUser;
