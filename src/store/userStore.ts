@@ -1,15 +1,11 @@
 import { create } from 'zustand';
 import { User, UserState } from '@/types/user';
 
-// Максимальное количество попыток авторизации
-const MAX_AUTH_RETRIES = 3;
-
 export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
-  authRetries: 0,
   
   /**
    * Set the user state
@@ -52,18 +48,9 @@ export const useUserStore = create<UserState>((set, get) => ({
   
   /**
    * Fetch the current user from the API
+   * @param initDataRaw - Raw initialization data from Telegram Mini App
    */
-  fetchUser: async () => {
-    // Проверяем слишком частые повторы
-    const { authRetries } = get();
-    if (authRetries >= MAX_AUTH_RETRIES) {
-      set({ 
-        error: 'Telegram WebApp authentication failed after multiple attempts', 
-        isLoading: false 
-      });
-      return;
-    }
-    
+  fetchUser: async (initDataRaw?: string) => {
     // Don't fetch if already loading
     if (get().isLoading) {
       return;
@@ -72,15 +59,14 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ isLoading: true, error: null });
     
     try {
+      let headers: Record<string, string> = {};
       
-      const webApp = window.Telegram?.WebApp;
-      let headers = {};
-      
-      if (webApp?.initData) {
+      // Use provided initDataRaw if available - already formatted with tma prefix
+      if (initDataRaw) {
         headers = {
-          'X-Telegram-Init-Data': webApp.initData
+          'Authorization': initDataRaw
         };
-      }
+      } 
 
       const response = await fetch('/api/user/me', { headers });
       
@@ -92,8 +78,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         set({ 
           user: data.user,
           isAuthenticated: true,
-          isLoading: false,
-          authRetries: 0 // Сбрасываем счетчик попыток при успехе
+          isLoading: false
         });
       } else {
         console.log('📂 UserStore: No user in response, setting unauthenticated state');

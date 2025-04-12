@@ -7,8 +7,20 @@ export interface ITelegramUser {
   last_name?: string;
   username?: string;
   photo_url?: string;
-  auth_date: number;
+  auth_date: number | string;
   hash: string;
+  signature?: string;
+  language_code?: string;
+  // Additional fields for our extended validation
+  user_data?: {
+    id: number;
+    first_name: string;
+    last_name?: string;
+    username?: string;
+    photo_url?: string;
+    language_code?: string;
+    [key: string]: unknown;
+  };
 }
 
 /**
@@ -26,7 +38,7 @@ export interface TelegramWebApp {
       language_code?: string;
       photo_url?: string;
     };
-    auth_date: number;
+    auth_date: number | string;
     hash: string;
   };
   ready(): void;
@@ -63,7 +75,7 @@ export interface TelegramUserData {
   language_code?: string;
   photo_url?: string;
   allows_write_to_pm?: boolean;
-  auth_date: string;
+  auth_date: string | number;
   hash: string;
 }
 

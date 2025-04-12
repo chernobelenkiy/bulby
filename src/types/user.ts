@@ -21,12 +21,11 @@ export interface UserState {
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-  authRetries: number;
   
   // Methods
   setUser: (user: User | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   clearUser: () => void;
-  fetchUser: () => Promise<void>;
+  fetchUser: (initDataRaw?: string) => Promise<void>;
 } 
