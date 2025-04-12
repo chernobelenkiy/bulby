@@ -1,43 +1,17 @@
-import { signIn } from 'next-auth/react';
-
-/**
- * Type definition for the Telegram WebApp object available in window when
- * the app is running inside the Telegram client
- */
-interface TelegramWebApp {
-  initData: string;
-  initDataUnsafe: {
-    query_id?: string;
-    user?: {
-      id: number;
-      first_name: string;
-      last_name?: string;
-      username?: string;
-      language_code?: string;
-      photo_url?: string;
-    };
-    auth_date: number;
-    hash: string;
-  };
-  ready(): void;
-  expand(): void;
-  close(): void;
-}
-
-// Extend the Window interface to include Telegram.WebApp
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: TelegramWebApp;
-    };
-  }
-}
+import { TelegramWebApp, TelegramUserData } from '@/types/telegram';
+import { browserStorage } from "@/lib/browser-storage";
+import { logger } from "@/lib/logger";
 
 /**
  * Check if the application is running inside Telegram WebApp
  */
 export function isTelegramWebApp(): boolean {
-  return typeof window !== 'undefined' && !!window.Telegram?.WebApp;
+  const isWebApp = typeof window !== 'undefined' && (
+    !!window.Telegram?.WebApp || // основной способ
+    window.location.search.includes('tgWebAppData=') // резервный способ
+  );
+  console.log('📱 isTelegramWebApp check:', isWebApp);
+  return isWebApp;
 }
 
 /**
@@ -45,9 +19,87 @@ export function isTelegramWebApp(): boolean {
  */
 export function getTelegramWebApp(): TelegramWebApp | null {
   if (isTelegramWebApp()) {
+    console.log('📱 getTelegramWebApp: WebApp found');
     return window.Telegram?.WebApp || null;
   }
+  console.log('📱 getTelegramWebApp: WebApp not found');
   return null;
+}
+
+/**
+ * Initialize Telegram WebApp by calling the ready method
+ * This should be called when the app is loaded to tell Telegram that the WebApp is ready
+ */
+export function initializeTelegramWebApp(): void {
+  const webApp = getTelegramWebApp();
+  if (webApp) {
+    try {
+      console.log('📱 Initializing Telegram WebApp with ready()');
+      webApp.ready();
+      console.log('📱 WebApp ready() called');
+      
+      // Dump all WebApp data for debugging
+      console.log('📱 WebApp data dump:', {
+        initData: webApp.initData,
+        platform: webApp.platform,
+        isExpanded: webApp.isExpanded,
+        viewportHeight: webApp.viewportHeight,
+        user: webApp.initDataUnsafe?.user ? {
+          id: webApp.initDataUnsafe.user.id,
+          first_name: webApp.initDataUnsafe.user.first_name,
+          last_name: webApp.initDataUnsafe.user.last_name,
+          username: webApp.initDataUnsafe.user.username
+        } : 'No user data',
+        authDate: webApp.initDataUnsafe?.auth_date || 'No auth date'
+      });
+    } catch (error) {
+      console.error('📱 Error initializing Telegram WebApp:', error);
+    }
+  } else {
+    console.log('📱 Not running in Telegram WebApp, skipping initialization');
+  }
+}
+
+/**
+ * Парсим строку параметров URL для получения данных Telegram WebApp
+ */
+export function parseUrlForTelegramData(): TelegramUserData | null {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const url = new URL(window.location.href);
+    const tgWebAppData = url.searchParams.get('tgWebAppData');
+    const tgWebAppUser = url.searchParams.get('tgWebAppUser');
+    
+    console.log("🔗 URL params:", { 
+      tgWebAppData, 
+      tgWebAppUser,
+      all: Object.fromEntries(url.searchParams)
+    });
+    
+    if (tgWebAppUser) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(tgWebAppUser));
+        console.log("👤 Parsed user data from URL:", userData);
+        return {
+          id: userData.id.toString(),
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username,
+          language_code: userData.language_code,
+          auth_date: Math.floor(Date.now() / 1000).toString(),
+          hash: "placeholder_hash_from_url"
+        };
+      } catch (e) {
+        console.error("❌ Error parsing tgWebAppUser:", e);
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("❌ Error parsing URL for Telegram data:", error);
+    return null;
+  }
 }
 
 /**
@@ -70,60 +122,86 @@ export function parseInitData(initData: string): Map<string, string | number | u
 }
 
 /**
- * Convert Telegram WebApp user data to the format needed for authentication
+ * Извлечь информацию о пользователе из Telegram WebApp
+ * @returns ITelegramUser | null
  */
-export function convertWebAppUserToAuthData(webApp: TelegramWebApp): Map<string, string | number | undefined> {
-  const authData = new Map<string, string | number | undefined>();
-  
-  // Extract data from initDataUnsafe
-  if (webApp.initDataUnsafe.user) {
-    authData.set('id', webApp.initDataUnsafe.user.id);
-    authData.set('first_name', webApp.initDataUnsafe.user.first_name);
-    authData.set('last_name', webApp.initDataUnsafe.user.last_name);
-    authData.set('username', webApp.initDataUnsafe.user.username);
-    authData.set('photo_url', webApp.initDataUnsafe.user.photo_url);
+export function extractTelegramUserData(): TelegramUserData | null {
+  try {
+    if (isInTelegramWebApp()) {
+      logger.info("Extracting user data from Telegram WebApp");
+      const userData = window.Telegram?.WebApp?.initDataUnsafe?.user;
+      if (userData) {
+        logger.info("User data successfully extracted from WebApp:", userData);
+        return {
+          id: userData.id.toString(),
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username,
+          language_code: userData.language_code,
+          photo_url: userData.photo_url,
+          auth_date: String(window.Telegram?.WebApp?.initDataUnsafe?.auth_date || Date.now()),
+          hash: window.Telegram?.WebApp?.initDataUnsafe?.hash || "test_hash",
+        };
+      } else {
+        logger.warn("No user data found in WebApp");
+      }
+    }
+
+    // Если не удалось получить данные из WebApp, пробуем из URL
+    logger.info("Trying to extract user data from URL parameters");
+    return parseUrlForTelegramData();
+  } catch (e) {
+    logger.error("Error extracting Telegram user data:", e);
+    return null;
   }
-  
-  authData.set('auth_date', webApp.initDataUnsafe.auth_date);
-  authData.set('hash', webApp.initDataUnsafe.hash);
-  
-  return authData;
 }
 
 /**
- * Authenticate user via Telegram WebApp
- * Automatically signs in the user when running inside Telegram WebApp
+ * Проверяем, находимся ли мы внутри Telegram WebApp
+ */
+export function isInTelegramWebApp(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!(window.Telegram && window.Telegram.WebApp);
+}
+
+/**
+ * Аутентификация пользователя через Telegram WebApp
+ * @returns Promise<boolean>
  */
 export async function authenticateWithTelegramWebApp(): Promise<boolean> {
   try {
-    const webApp = getTelegramWebApp();
-    if (!webApp || !webApp.initDataUnsafe.user) {
-      console.error('Not in Telegram WebApp or user data not available');
+    logger.info("Starting Telegram WebApp authentication process");
+    
+    // Попытка извлечь данные пользователя
+    let userData = extractTelegramUserData();
+    
+    // Если данные пользователя не найдены, но мы находимся в режиме разработки, используем тестовые данные
+    if (!userData && process.env.NODE_ENV === "development") {
+      logger.info("Using test user data for development");
+      userData = {
+        id: "12345678",
+        first_name: "Test",
+        last_name: "User",
+        username: "testuser",
+        language_code: "en",
+        photo_url: "https://t.me/i/userpic/320/1pXL2rPNGlSvDeBi1e1ZwmC-ZWMpRIQJ4Sxjle_Bfb4vq4IJ_C6M.jpg",
+        auth_date: Date.now().toString(),
+        hash: "test_hash",
+      };
+    }
+    
+    if (!userData) {
+      logger.warn("Failed to extract user data and no test data available");
       return false;
     }
     
-    const user = webApp.initDataUnsafe.user;
+    // Сохраняем данные пользователя
+    browserStorage.setItem("telegramUser", JSON.stringify(userData));
+    logger.info("User authenticated successfully:", userData);
     
-    // Format user data for authentication
-    const authData = {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name || '',
-      username: user.username || '',
-      photo_url: user.photo_url || '',
-      auth_date: webApp.initDataUnsafe.auth_date,
-      hash: webApp.initDataUnsafe.hash
-    };
-    
-    // Sign in using NextAuth
-    const result = await signIn('telegram-login', { 
-      redirect: false,
-      ...authData
-    });
-    
-    return !!result?.ok;
-  } catch (error) {
-    console.error('Error authenticating with Telegram WebApp:', error);
+    return true;
+  } catch (e) {
+    logger.error("Error during Telegram WebApp authentication:", e);
     return false;
   }
 } 

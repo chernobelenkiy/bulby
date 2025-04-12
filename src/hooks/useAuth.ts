@@ -19,7 +19,14 @@ export function useAuth() {
   // Fetch user when the hook is first used
   useEffect(() => {
     if (!user && !isLoading && !error) {
+      console.log('🔐 useAuth: No user data, fetching user');
       fetchUser();
+    } else if (user) {
+      console.log('🔐 useAuth: User already loaded:', user.id);
+    } else if (isLoading) {
+      console.log('🔐 useAuth: User data loading');
+    } else if (error) {
+      console.log('🔐 useAuth: Error loading user data:', error);
     }
   }, [user, isLoading, error, fetchUser]);
 
@@ -28,11 +35,13 @@ export function useAuth() {
    */
   const logout = async () => {
     try {
+      console.log('🔐 useAuth: Signing out');
       await signOut({ redirect: false });
       clearUser();
+      console.log('🔐 useAuth: Sign out successful');
       return true;
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('🔐 useAuth: Logout error:', error);
       return false;
     }
   };
@@ -41,7 +50,16 @@ export function useAuth() {
    * Update user data in the store
    */
   const updateUser = (userData: User | null) => {
+    console.log('🔐 useAuth: Updating user data:', userData?.id || 'null');
     setUser(userData);
+  };
+  
+  /**
+   * Refresh user data from the API
+   */
+  const refreshUser = async () => {
+    console.log('🔐 useAuth: Refreshing user data');
+    await fetchUser();
   };
 
   return {
@@ -51,6 +69,6 @@ export function useAuth() {
     isAuthenticated,
     logout,
     updateUser,
-    refreshUser: fetchUser
+    refreshUser
   };
 } 

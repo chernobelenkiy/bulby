@@ -106,7 +106,7 @@ export default function Navigation() {
               <MenuItem onClick={handleCloseNavMenu} component={Link} href="/app">
                 <Typography textAlign="center">{getTranslation('nav.app', fallbackNavItems.app)}</Typography>
               </MenuItem>
-              <MenuItem onClick={handleCloseNavMenu} component={Link} href="/app/my-ideas">
+              <MenuItem onClick={handleCloseNavMenu} component={Link} href="/ideas">
                 <Typography textAlign="center">{getTranslation('nav.myIdeas', fallbackNavItems.myIdeas)}</Typography>
               </MenuItem>
             </Menu>
@@ -150,7 +150,7 @@ export default function Navigation() {
             </Button>
             <Button
               component={Link}
-              href="/app/my-ideas"
+              href="/ideas"
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: 'white', display: 'block' }}
             >

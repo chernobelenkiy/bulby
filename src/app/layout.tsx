@@ -1,11 +1,10 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import AppWrapper from "@/components/AppWrapper";
 import { NextAuthProvider } from "@/app/providers";
 import UserProvider from "@/components/providers/UserProvider";
-
-// Don't import i18n initialization here - we'll use the provider component
+import TelegramInitializer from "@/components/telegram/TelegramInitializer";
 
 // Define fonts
 const inter = Inter({ 
@@ -23,6 +22,13 @@ export const metadata: Metadata = {
   description: "Generate creative ideas with AI",
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,6 +40,7 @@ export default function RootLayout({
         <NextAuthProvider>
           <UserProvider>
             <AppWrapper>
+              <TelegramInitializer />
               {children}
             </AppWrapper>
           </UserProvider>
