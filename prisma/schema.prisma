@@ -35,6 +35,12 @@ model Idea {
   userId      String
   method      Method   @relation(fields: [methodId], references: [id])
   methodId    String
+  
+  // Additional fields for idea metadata
+  dreamerNotes String?  @db.Text
+  realistNotes String?  @db.Text
+  criticNotes  String?  @db.Text
+  score        Float?   @default(0)
 }
 
 model Method {

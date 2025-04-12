@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Container, 
@@ -20,7 +20,8 @@ import {
   DialogActions,
   TextField,
   Stack,
-  Chip
+  Chip,
+  CircularProgress
 } from '@mui/material';
 import { GridContainer, GridItem } from '@/components/CustomGrid';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,78 +29,88 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ChatIcon from '@mui/icons-material/Chat';
 import { format } from 'date-fns';
-
-// Mock data for saved ideas
-const DUMMY_IDEAS = [
-  {
-    id: '1',
-    title: 'Mobile App for Plant Care',
-    description: 'An app that uses AI to identify plant diseases and provide care instructions based on photos.',
-    createdAt: new Date('2023-07-15'),
-    method: 'brainstorming'
-  },
-  {
-    id: '2',
-    title: 'Sustainable Food Packaging',
-    description: 'Biodegradable food packaging made from agricultural waste that decomposes within 30 days.',
-    createdAt: new Date('2023-08-22'),
-    method: 'scamper'
-  },
-  {
-    id: '3',
-    title: 'Virtual Reality Meditation Space',
-    description: 'A VR environment that creates personalized meditation spaces based on user preferences and stress levels.',
-    createdAt: new Date('2023-09-05'),
-    method: 'mindMapping'
-  }
-];
+import { useIdeasStore } from '@/store/ideasStore';
 
 export default function IdeasPage() {
   const { t } = useTranslation();
-  const [ideas, setIdeas] = useState(DUMMY_IDEAS);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [currentIdea, setCurrentIdea] = useState<(typeof DUMMY_IDEAS)[0] | null>(null);
+  const [currentIdeaId, setCurrentIdeaId] = useState<string | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   
-  const handleEditOpen = (idea: typeof DUMMY_IDEAS[0]) => {
-    setCurrentIdea(idea);
-    setEditedTitle(idea.title);
-    setEditedDescription(idea.description);
-    setOpenEdit(true);
+  // Get data and actions from the ideas store
+  const { 
+    ideas, 
+    isLoading, 
+    error, 
+    fetchIdeas, 
+    updateIdea, 
+    deleteIdea 
+  } = useIdeasStore();
+  
+  // Fetch ideas on component mount
+  useEffect(() => {
+    fetchIdeas();
+  }, [fetchIdeas]);
+  
+  // Get the current idea based on the selected ID
+  const currentIdea = currentIdeaId ? ideas.find(idea => idea.id === currentIdeaId) : null;
+  
+  const handleEditOpen = (ideaId: string) => {
+    const idea = ideas.find(i => i.id === ideaId);
+    if (idea) {
+      setCurrentIdeaId(ideaId);
+      setEditedTitle(idea.title);
+      setEditedDescription(idea.description);
+      setOpenEdit(true);
+    }
   };
 
   const handleEditClose = () => {
     setOpenEdit(false);
+    setCurrentIdeaId(null);
   };
 
-  const handleEditSave = () => {
-    if (!currentIdea) return;
+  const handleEditSave = async () => {
+    if (!currentIdeaId) return;
     
-    const updatedIdeas = ideas.map(idea => 
-      idea.id === currentIdea.id ? { ...idea, title: editedTitle, description: editedDescription } : idea
-    );
+    await updateIdea(currentIdeaId, {
+      title: editedTitle,
+      description: editedDescription
+    });
     
-    setIdeas(updatedIdeas);
     setOpenEdit(false);
+    setCurrentIdeaId(null);
   };
 
-  const handleDeleteOpen = (idea: typeof DUMMY_IDEAS[0]) => {
-    setCurrentIdea(idea);
+  const handleDeleteOpen = (ideaId: string) => {
+    setCurrentIdeaId(ideaId);
     setOpenDelete(true);
   };
 
   const handleDeleteClose = () => {
     setOpenDelete(false);
+    setCurrentIdeaId(null);
   };
 
-  const handleDeleteConfirm = () => {
-    if (!currentIdea) return;
+  const handleDeleteConfirm = async () => {
+    if (!currentIdeaId) return;
     
-    const updatedIdeas = ideas.filter(idea => idea.id !== currentIdea.id);
-    setIdeas(updatedIdeas);
+    await deleteIdea(currentIdeaId);
     setOpenDelete(false);
+    setCurrentIdeaId(null);
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, 'MMM d, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
 
   return (
@@ -119,7 +130,23 @@ export default function IdeasPage() {
         </Button>
       </Box>
       
-      {ideas.length === 0 ? (
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="body1" color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+          <Button 
+            variant="contained" 
+            onClick={() => fetchIdeas()}
+          >
+            {t('ideas.retry')}
+          </Button>
+        </Paper>
+      ) : ideas.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="body1" sx={{ mb: 2 }}>
             {t('ideas.noIdeas')}
@@ -150,7 +177,7 @@ export default function IdeasPage() {
                       color="primary" 
                     />
                     <Typography variant="caption" color="text.secondary">
-                      {format(idea.createdAt, 'MMM d, yyyy')}
+                      {formatDate(idea.createdAt.toString())}
                     </Typography>
                   </Box>
                   
@@ -172,14 +199,14 @@ export default function IdeasPage() {
                   <IconButton 
                     aria-label="edit"
                     color="primary"
-                    onClick={() => handleEditOpen(idea)}
+                    onClick={() => handleEditOpen(idea.id)}
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton 
                     aria-label="delete"
                     color="error"
-                    onClick={() => handleDeleteOpen(idea)}
+                    onClick={() => handleDeleteOpen(idea.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -192,17 +219,17 @@ export default function IdeasPage() {
       
       {/* Edit Dialog */}
       <Dialog open={openEdit} onClose={handleEditClose}>
-        <DialogTitle>Edit Idea</DialogTitle>
+        <DialogTitle>{t('ideas.editIdea')}</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
             <TextField
-              label="Title"
+              label={t('ideas.title')}
               fullWidth
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
             />
             <TextField
-              label="Description"
+              label={t('ideas.description')}
               fullWidth
               multiline
               rows={4}
@@ -212,22 +239,22 @@ export default function IdeasPage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleEditClose}>Cancel</Button>
-          <Button onClick={handleEditSave} variant="contained" color="primary">Save</Button>
+          <Button onClick={handleEditClose}>{t('ideas.cancel')}</Button>
+          <Button onClick={handleEditSave} variant="contained" color="primary">{t('ideas.save')}</Button>
         </DialogActions>
       </Dialog>
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={openDelete} onClose={handleDeleteClose}>
-        <DialogTitle>Delete Idea</DialogTitle>
+        <DialogTitle>{t('ideas.deleteIdea')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete the idea &quot;{currentIdea?.title}&quot;? This action cannot be undone.
+            {t('ideas.deleteConfirmation', { title: currentIdea?.title })}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteClose}>Cancel</Button>
-          <Button onClick={handleDeleteConfirm} variant="contained" color="error">Delete</Button>
+          <Button onClick={handleDeleteClose}>{t('ideas.cancel')}</Button>
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">{t('ideas.delete')}</Button>
         </DialogActions>
       </Dialog>
     </Container>

@@ -16,6 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
 import { GeneratedIdea } from '@/types/ideas';
 import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
+import { useIdeasStore } from '@/store/ideasStore';
 import { useTranslation } from 'react-i18next';
 
 interface IdeaCardProps {
@@ -26,14 +27,20 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
   const [expanded, setExpanded] = useState(false);
   const { t } = useTranslation();
   const theme = useTheme();
+  
+  // Get method from generator store
   const selectedMethod = useIdeaGeneratorStore(state => state.selectedMethod);
-  const savedIdeas = useIdeaGeneratorStore(state => state.savedIdeas);
-  const saveIdea = useIdeaGeneratorStore(state => state.saveIdea);
-
-  const isIdeasaved = savedIdeas.some(
+  
+  // Get ideas from the ideas store
+  const ideas = useIdeasStore(state => state.ideas);
+  const saveIdea = useIdeasStore(state => state.saveIdea);
+  
+  // Check if the idea is saved
+  const isIdeasaved = ideas.some(
     savedIdea => savedIdea.title === idea.title
   );
 
+  // Handle save/unsave idea
   const handleSaveIdea = () => {
     saveIdea(idea, selectedMethod);
   };
