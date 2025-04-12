@@ -1,64 +1,8 @@
-import { TelegramWebApp, TelegramUserData } from '@/types/telegram';
+import { createHash, createHmac } from 'crypto';
 import { browserStorage } from "@/lib/browser-storage";
 import { logger } from "@/lib/logger";
+import { TelegramUserData, ITelegramUser } from '@/types/telegram';
 
-/**
- * Check if the application is running inside Telegram WebApp
- */
-export function isTelegramWebApp(): boolean {
-  const isWebApp = typeof window !== 'undefined' && (
-    !!window.Telegram?.WebApp || // основной способ
-    window.location.search.includes('tgWebAppData=') // резервный способ
-  );
-  console.log('📱 isTelegramWebApp check:', isWebApp);
-  return isWebApp;
-}
-
-/**
- * Get the Telegram WebApp object
- */
-export function getTelegramWebApp(): TelegramWebApp | null {
-  if (isTelegramWebApp()) {
-    console.log('📱 getTelegramWebApp: WebApp found');
-    return window.Telegram?.WebApp || null;
-  }
-  console.log('📱 getTelegramWebApp: WebApp not found');
-  return null;
-}
-
-/**
- * Initialize Telegram WebApp by calling the ready method
- * This should be called when the app is loaded to tell Telegram that the WebApp is ready
- */
-export function initializeTelegramWebApp(): void {
-  const webApp = getTelegramWebApp();
-  if (webApp) {
-    try {
-      console.log('📱 Initializing Telegram WebApp with ready()');
-      webApp.ready();
-      console.log('📱 WebApp ready() called');
-      
-      // Dump all WebApp data for debugging
-      console.log('📱 WebApp data dump:', {
-        initData: webApp.initData,
-        platform: webApp.platform,
-        isExpanded: webApp.isExpanded,
-        viewportHeight: webApp.viewportHeight,
-        user: webApp.initDataUnsafe?.user ? {
-          id: webApp.initDataUnsafe.user.id,
-          first_name: webApp.initDataUnsafe.user.first_name,
-          last_name: webApp.initDataUnsafe.user.last_name,
-          username: webApp.initDataUnsafe.user.username
-        } : 'No user data',
-        authDate: webApp.initDataUnsafe?.auth_date || 'No auth date'
-      });
-    } catch (error) {
-      console.error('📱 Error initializing Telegram WebApp:', error);
-    }
-  } else {
-    console.log('📱 Not running in Telegram WebApp, skipping initialization');
-  }
-}
 
 /**
  * Парсим строку параметров URL для получения данных Telegram WebApp
@@ -123,11 +67,11 @@ export function parseInitData(initData: string): Map<string, string | number | u
 
 /**
  * Извлечь информацию о пользователе из Telegram WebApp
- * @returns ITelegramUser | null
+ * @returns TelegramUserData | null
  */
 export function extractTelegramUserData(): TelegramUserData | null {
   try {
-    if (isInTelegramWebApp()) {
+    if (window.Telegram?.WebApp) {
       logger.info("Extracting user data from Telegram WebApp");
       const userData = window.Telegram?.WebApp?.initDataUnsafe?.user;
       if (userData) {
@@ -157,14 +101,6 @@ export function extractTelegramUserData(): TelegramUserData | null {
 }
 
 /**
- * Проверяем, находимся ли мы внутри Telegram WebApp
- */
-export function isInTelegramWebApp(): boolean {
-  if (typeof window === "undefined") return false;
-  return !!(window.Telegram && window.Telegram.WebApp);
-}
-
-/**
  * Аутентификация пользователя через Telegram WebApp
  * @returns Promise<boolean>
  */
@@ -173,22 +109,7 @@ export async function authenticateWithTelegramWebApp(): Promise<boolean> {
     logger.info("Starting Telegram WebApp authentication process");
     
     // Попытка извлечь данные пользователя
-    let userData = extractTelegramUserData();
-    
-    // Если данные пользователя не найдены, но мы находимся в режиме разработки, используем тестовые данные
-    if (!userData && process.env.NODE_ENV === "development") {
-      logger.info("Using test user data for development");
-      userData = {
-        id: "12345678",
-        first_name: "Test",
-        last_name: "User",
-        username: "testuser",
-        language_code: "en",
-        photo_url: "https://t.me/i/userpic/320/1pXL2rPNGlSvDeBi1e1ZwmC-ZWMpRIQJ4Sxjle_Bfb4vq4IJ_C6M.jpg",
-        auth_date: Date.now().toString(),
-        hash: "test_hash",
-      };
-    }
+    const userData = extractTelegramUserData();
     
     if (!userData) {
       logger.warn("Failed to extract user data and no test data available");
@@ -203,5 +124,88 @@ export async function authenticateWithTelegramWebApp(): Promise<boolean> {
   } catch (e) {
     logger.error("Error during Telegram WebApp authentication:", e);
     return false;
+  }
+}
+
+// Authentication validator
+export type AuthDataMap = Map<string, string | number | undefined>;
+
+export class AuthDataValidator {
+  private botToken: string;
+  private inValidateDataAfter: number;
+
+  constructor({ botToken }: { botToken: string }) {
+    this.botToken = botToken;
+    this.inValidateDataAfter = 86400; // 24 hours by default
+  }
+
+  /**
+   * Validates the data sent by Telegram Login Widget
+   */
+  async validate<T extends { id: number | string } = ITelegramUser>(
+    authDataMap: AuthDataMap
+  ): Promise<T> {
+    try {
+      // Check required fields
+      const hash = authDataMap.get('hash') as string;
+      const authDate = authDataMap.get('auth_date') as number;
+      const id = authDataMap.get('id');
+
+      if (!hash || !authDate || !id) {
+        throw new Error('Invalid! Incomplete data provided.');
+      }
+
+      // Check if data is expired
+      const now = Math.floor(Date.now() / 1000);
+      if (now - Number(authDate) > this.inValidateDataAfter) {
+        throw new Error('Authentication data is expired');
+      }
+
+      // Create a copy without the hash
+      const dataCheckMap = new Map(authDataMap);
+      dataCheckMap.delete('hash');
+
+      // Get data string
+      const dataCheckString = this.getDataCheckString(dataCheckMap);
+
+      // Create secret key
+      const secretKey = createHash('sha256')
+        .update(this.botToken)
+        .digest();
+
+      // Calculate hash
+      const calculatedHash = createHmac('sha256', secretKey)
+        .update(dataCheckString)
+        .digest('hex');
+
+      // Verify hash
+      if (calculatedHash !== hash) {
+        throw new Error('Data integrity check failed');
+      }
+
+      // Return data as object
+      return Object.fromEntries(authDataMap.entries()) as T;
+    } catch (error) {
+      console.error('Validation error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a string for data verification
+   */
+  private getDataCheckString(authDataMap: AuthDataMap): string {
+    const dataToCheck: string[] = [];
+
+    for (const [key, value] of authDataMap.entries()) {
+      if (value !== undefined) {
+        dataToCheck.push(`${key}=${value}`);
+      }
+    }
+    
+    // Sort alphabetically as required by Telegram
+    dataToCheck.sort();
+
+    return dataToCheck.join('\n');
   }
 } 

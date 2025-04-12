@@ -1,11 +1,16 @@
 import { create } from 'zustand';
 import { User, UserState } from '@/types/user';
 
+// Максимальное количество попыток авторизации
+const MAX_AUTH_RETRIES = 3;
+
 export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
+  isTelegramWebApp: false,
+  authRetries: 0,
   
   /**
    * Set the user state
@@ -50,24 +55,35 @@ export const useUserStore = create<UserState>((set, get) => ({
    * Fetch the current user from the API
    */
   fetchUser: async () => {
-    // Don't fetch if already loading
-    if (get().isLoading) {
-      console.log('📂 UserStore: Already loading, skipping fetch');
+    // Проверяем слишком частые повторы
+    const { authRetries } = get();
+    if (authRetries >= MAX_AUTH_RETRIES) {
+      set({ 
+        error: 'Telegram WebApp authentication failed after multiple attempts', 
+        isLoading: false 
+      });
       return;
     }
     
-    console.log('📂 UserStore: Fetching user from API');
+    // Don't fetch if already loading
+    if (get().isLoading) {
+      return;
+    }
+    
     set({ isLoading: true, error: null });
     
     try {
-      console.log('📂 UserStore: Making API request to /api/user/me');
-      const response = await fetch('/api/user/me');
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`📂 UserStore: API error (${response.status}):`, errorText);
-        throw new Error(`Failed to fetch user: ${response.status} ${errorText || response.statusText}`);
+      const webApp = window.Telegram?.WebApp;
+      let headers = {};
+      
+      if (webApp?.initData) {
+        headers = {
+          'X-Telegram-Init-Data': webApp.initData
+        };
       }
+
+      const response = await fetch('/api/user/me', { headers });
       
       const data = await response.json();
       console.log('📂 UserStore: API response:', data);
@@ -77,7 +93,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         set({ 
           user: data.user,
           isAuthenticated: true,
-          isLoading: false 
+          isLoading: false,
+          authRetries: 0 // Сбрасываем счетчик попыток при успехе
         });
       } else {
         console.log('📂 UserStore: No user in response, setting unauthenticated state');

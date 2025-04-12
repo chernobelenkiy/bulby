@@ -2,25 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { isTelegramWebApp } from '@/lib/telegram/webapp';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ITelegramUser } from '@/types/telegram';
 
-interface TelegramLoginContainerProps {
-  botName: string;
-}
 
-/**
- * Компонент для входа через Telegram
- * Теперь вместо разных компонентов у нас один компонент, который
- * выполняет весь процесс авторизации через Telegram Login Widget
- */
-export default function TelegramLoginContainer({ botName }: TelegramLoginContainerProps) {
+export default function TelegramLoginContainer() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [inTelegramWebApp] = useState(() => isTelegramWebApp());
+  const [inTelegramWebApp] = useState(() => window.Telegram?.WebApp);
   
   // Обработчик для успешной авторизации через Telegram Widget
   const handleTelegramAuth = async (user: ITelegramUser) => {
@@ -56,14 +47,7 @@ export default function TelegramLoginContainer({ botName }: TelegramLoginContain
   
   // Инициализация Telegram Login Widget
   useEffect(() => {
-    // Пропускаем инициализацию, если в WebApp или нет имени бота
-    if (inTelegramWebApp || !botName) {
-      console.log('📱 TelegramLogin: Skipping widget init - inWebApp:', inTelegramWebApp, 'botName:', botName);
-      return;
-    }
-    
-    console.log('📱 TelegramLogin: Initializing Telegram Login Widget for bot', botName);
-    
+  
     // Функция для обработки данных от Telegram Widget
     window.TelegramLoginWidget = {
       dataOnauth: handleTelegramAuth
@@ -75,7 +59,7 @@ export default function TelegramLoginContainer({ botName }: TelegramLoginContain
     script.async = true;
     
     // Настраиваем параметры виджета
-    script.setAttribute('data-telegram-login', botName);
+    script.setAttribute('data-telegram-login', process.env.TELEGRAM_BOT_NAME || '');
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-radius', '12');
     script.setAttribute('data-request-access', 'write');
@@ -105,16 +89,15 @@ export default function TelegramLoginContainer({ botName }: TelegramLoginContain
         container.removeChild(script);
       }
     };
-  }, [botName, inTelegramWebApp, handleTelegramAuth]);
+  }, []);
   
-  // Если открыто внутри Telegram WebApp, то не показываем кнопку
   if (inTelegramWebApp) {
     console.log('📱 TelegramLogin: In Telegram WebApp, not showing login button');
     return null;
   }
   
   // Если бот не сконфигурирован, показываем ошибку
-  if (!botName) {
+  if (!process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME) {
     console.error('📱 TelegramLogin: Bot name not configured');
     return (
       <Box sx={{ 

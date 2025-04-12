@@ -50,6 +50,7 @@ export default function MethodSelector() {
         }}
       >
         <InputLabel id="method-select-label">{t('generator.selectMethod')}</InputLabel>
+        
         <Select
           labelId="method-select-label"
           id="method-select"

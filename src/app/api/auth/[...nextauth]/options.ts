@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { AuthService } from "@/lib/auth-service";
-import { AuthDataValidator } from "@/lib/telegram-auth";
+import { AuthDataValidator } from "@/lib/telegram";
 import { ITelegramUser } from "@/types/telegram";
 
 export const authOptions: NextAuthOptions = {

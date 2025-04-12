@@ -7,11 +7,22 @@ export interface User {
   telegramData?: string | null;
 }
 
+// Тип для данных пользователя из Telegram WebApp
+export interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+}
+
 export interface UserState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  isTelegramWebApp: boolean;
+  authRetries: number;
   
   // Methods
   setUser: (user: User | null) => void;
