@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateIdeasUsingDisneyMethod } from '@/lib/methods/disneyMethod';
 import { generateIdeasUsingBrainstormingMethod } from '@/lib/methods/brainstormingMethod';
-import { generateIdeasUsingScamperMethod } from '@/lib/scamperMethod';
-import { generateIdeasUsingSixHatsMethod } from '@/lib/sixHatsMethod';
+import { generateIdeasUsingScamperMethod } from '@/lib/methods/scamperMethod';
+import { generateIdeasUsingSixHatsMethod } from '@/lib/methods/sixHatsMethod';
 import { generateIdeasUsingMindMappingMethod } from '@/lib/methods/mindMappingMethod';
 
 export async function POST(req: NextRequest) {
