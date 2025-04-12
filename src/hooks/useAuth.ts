@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { useUserStore } from '@/store/userStore';
 import { User } from '@/types/user';
@@ -15,21 +14,6 @@ export function useAuth() {
     fetchUser,
     clearUser
   } = useUserStore();
-
-  // Fetch user when the hook is first used
-  useEffect(() => {
-    if (!user && !isLoading && !error) {
-      console.log('🔐 useAuth: No user data, fetching user');
-      fetchUser();
-    } else if (user) {
-      console.log('🔐 useAuth: User already loaded:', user.id);
-    } else if (isLoading) {
-      console.log('🔐 useAuth: User data loading');
-    } else if (error) {
-      console.log('🔐 useAuth: Error loading user data:', error);
-    }
-  }, [user, isLoading, error, fetchUser]);
-
   /**
    * Sign out the user
    */

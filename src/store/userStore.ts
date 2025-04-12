@@ -9,7 +9,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   isLoading: false,
   error: null,
   isAuthenticated: false,
-  isTelegramWebApp: false,
   authRetries: 0,
   
   /**

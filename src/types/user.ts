@@ -21,7 +21,6 @@ export interface UserState {
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-  isTelegramWebApp: boolean;
   authRetries: number;
   
   // Methods

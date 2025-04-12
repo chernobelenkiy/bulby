@@ -120,32 +120,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Use NEXT_PUBLIC_DOMAIN if available
-      const domain = process.env.NEXT_PUBLIC_DOMAIN || baseUrl;
-      console.log("🔑 Redirect callback with:", { 
-        url, 
-        baseUrl, 
-        domain, 
-        NODE_ENV: process.env.NODE_ENV 
-      });
-      
-      // Allows relative callback URLs
-      if (url.startsWith("/")) {
-        const fullUrl = `${domain}${url}`;
-        console.log("🔑 Redirecting to:", fullUrl);
-        return fullUrl;
-      }
-      
-      // Allows callback URLs on the same origin
-      if (new URL(url).origin === baseUrl) {
-        console.log("🔑 Redirecting to same origin:", url);
-        return url;
-      }
-      
-      console.log("🔑 Redirecting to domain:", domain);
-      return domain;
-    },
     async session({ session, token }) {
       console.log("🔑 Session callback with token:", token);
       if (session.user && token.sub) {
