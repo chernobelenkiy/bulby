@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import AppWrapper from "@/components/AppWrapper";
-import UserProvider from "@/components/providers/UserProvider";
 
 // Define fonts
 const inter = Inter({ 
