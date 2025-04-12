@@ -2,6 +2,13 @@
 
 import { ReactNode, useEffect } from 'react';
 import { useUserStore } from '@/store/userStore';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the TelegramWebAppAuth component to prevent SSR issues
+const TelegramWebAppAuth = dynamic(
+  () => import('@/components/auth/TelegramWebAppAuth'),
+  { ssr: false }
+);
 
 interface UserProviderProps {
   children: ReactNode;
@@ -19,5 +26,10 @@ export default function UserProvider({ children }: UserProviderProps) {
     fetchUser();
   }, [fetchUser]);
   
-  return <>{children}</>;
+  return (
+    <>
+      <TelegramWebAppAuth />
+      {children}
+    </>
+  );
 } 

@@ -72,11 +72,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
+      // Use NEXT_PUBLIC_DOMAIN if available
+      const domain = process.env.NEXT_PUBLIC_DOMAIN || baseUrl;
+      
       // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (url.startsWith("/")) return `${domain}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      return domain;
     },
     async session({ session, token }) {
       if (session.user && token.sub) {

@@ -20,7 +20,7 @@ interface TelegramLoginButtonProps {
   cornerRadius?: number;
   requestAccess?: boolean;
   wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
-  dataOnauth: (user: ITelegramUser) => void;
+  dataOnauth?: (user: ITelegramUser) => void;
   dataAuthUrl?: string;
   buttonSize?: "large" | "medium" | "small";
   style?: React.CSSProperties;

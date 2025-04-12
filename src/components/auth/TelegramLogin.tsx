@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import { TelegramLoginButton, ITelegramUser } from './TelegramLoginButton';
+import { useCallback } from 'react';
+import { Box, Paper, Typography } from '@mui/material';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { TelegramLoginButton } from './TelegramLoginButton';
+import { ITelegramUser } from './TelegramLoginButton';
 
 interface TelegramLoginProps {
   botName: string;
@@ -12,39 +13,31 @@ interface TelegramLoginProps {
 
 export default function TelegramLogin({ botName }: TelegramLoginProps) {
   const router = useRouter();
+  const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
-  const handleTelegramLogin = async (telegramUser: ITelegramUser) => {
+  // Handle successful Telegram login
+  const handleTelegramLogin = useCallback(async (user: ITelegramUser) => {
     try {
-      // Convert the user data into URL search params format
-      const searchParams = new URLSearchParams();
-      Object.entries(telegramUser).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, value.toString());
-        }
-      });
-
-      // Sign in with telegram-login provider
       const result = await signIn('telegram-login', {
-        callbackUrl: '/',
         redirect: false,
-        ...Object.fromEntries(searchParams), // spread the user data as URL parameters
+        ...user
       });
-
-      if (result?.error) {
-        console.error('Login error:', result.error);
-        throw new Error(result.error);
-      }
-
-      // Redirect on successful login
-      if (result?.url) {
-        router.push(result.url);
+      
+      if (result?.ok) {
+        router.push('/');
+      } else {
+        console.error('Login failed:', result?.error);
       }
     } catch (error) {
-      console.error('Error during sign in:', error);
+      console.error('Login error:', error);
     }
-  };
+  }, [router]);
+  
+  // Determine the auth URL to use
+  const authUrl = domain ? `${domain}/api/auth/callback/telegram-login` : undefined;
 
-  return (
+  // Common UI elements
+  const renderLoginUI = (telegramButton: React.ReactNode) => (
     <Box
       sx={{
         display: 'flex',
@@ -73,15 +66,34 @@ export default function TelegramLogin({ botName }: TelegramLoginProps) {
           backgroundColor: '#f5f5f5'
         }}
       >
-        <TelegramLoginButton
-          botName={botName}
-          usePic={true}
-          cornerRadius={12}
-          requestAccess={true}
-          buttonSize="large"
-          dataOnauth={handleTelegramLogin}
-        />
+        {telegramButton}
       </Paper>
     </Box>
+  );
+
+  // Use redirect URL or callback function based on domain availability
+  if (authUrl) {
+    return renderLoginUI(
+      <TelegramLoginButton
+        botName={botName}
+        usePic={true}
+        cornerRadius={12}
+        requestAccess={true}
+        buttonSize="large"
+        dataAuthUrl={authUrl}
+      />
+    );
+  }
+  
+  // Fall back to callback approach if no domain is configured
+  return renderLoginUI(
+    <TelegramLoginButton
+      botName={botName}
+      usePic={true}
+      cornerRadius={12}
+      requestAccess={true}
+      buttonSize="large"
+      dataOnauth={handleTelegramLogin}
+    />
   );
 } 
