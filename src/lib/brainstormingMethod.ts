@@ -59,7 +59,8 @@ export async function generateIdeasUsingBrainstormingMethod(
     1. A catchy title
     2. A concise description
     3. Optional notes on what makes this idea interesting or unique
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt,
     schema: ideaGeneratorSchema,
   });
@@ -77,7 +78,8 @@ export async function generateIdeasUsingBrainstormingMethod(
     2. Innovation factors - what makes this idea innovative or unique
     3. Potential application areas where this idea could be implemented
     Be honest and critical in your evaluations.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Evaluate these brainstormed ideas:
     ${topIdeas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: evaluatorSchema,
@@ -89,13 +91,18 @@ export async function generateIdeasUsingBrainstormingMethod(
       evaluation => evaluation.title === idea.title
     );
 
+    // Create labels based on selected language
+    const notesLabel = language === 'ru' ? 'Заметки:' : 'Notes:';
+    const applicationsLabel = language === 'ru' ? 'Области применения:' : 'Application Areas:';
+    const innovationLabel = language === 'ru' ? 'Факторы инноваций:' : 'Innovation Factors:';
+
     return {
       title: idea.title,
       description: idea.description,
       score: evaluation?.score || 5,
-      dreamerNotes: idea.notes,
-      realistNotes: evaluation?.applicationAreas,
-      criticNotes: evaluation?.innovationFactors,
+      dreamerNotes: idea.notes ? `${notesLabel} ${idea.notes}` : undefined,
+      realistNotes: evaluation?.applicationAreas ? `${applicationsLabel} ${evaluation.applicationAreas}` : undefined,
+      criticNotes: evaluation?.innovationFactors ? `${innovationLabel} ${evaluation.innovationFactors}` : undefined,
     };
   });
 

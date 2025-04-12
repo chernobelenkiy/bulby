@@ -67,7 +67,8 @@ export async function generateIdeasUsingMindMappingMethod(
     4. 3-5 main branches that would emerge from the central concept in a mind map
     
     Focus on creating a clear structure for each mind map that effectively organizes the key elements of the idea.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt,
     schema: mindMapperSchema,
   });
@@ -89,7 +90,8 @@ export async function generateIdeasUsingMindMappingMethod(
     4. Applications - suggest practical ways to apply or implement the idea
     
     Look for unexpected connections and innovative applications.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Analyze these mind map structures:
     ${topIdeas.map(idea => 
       `# ${idea.title}:\n${idea.description}\n- Central Concept: ${idea.centralConcept}\n- Branches: ${idea.branches.join(', ')}`
@@ -103,13 +105,20 @@ export async function generateIdeasUsingMindMappingMethod(
       analysis => analysis.title === idea.title
     );
 
+    // Create labels based on selected language
+    const centralConceptLabel = language === 'ru' ? 'Центральная концепция:' : 'Central Concept:';
+    const insightsLabel = language === 'ru' ? 'Выводы:' : 'Insights:';
+    const applicationsLabel = language === 'ru' ? 'Применение:' : 'Applications:';
+    const connectionsLabel = language === 'ru' ? 'Связи:' : 'Connections:';
+    const branchesLabel = language === 'ru' ? 'Основные ветви:' : 'Main Branches:';
+
     return {
       title: idea.title,
       description: idea.description,
       score: analysis?.score || 5,
-      dreamerNotes: `Central Concept: ${idea.centralConcept}\n\nInsights: ${analysis?.insights || ''}`,
-      realistNotes: `Applications: ${analysis?.applications || ''}\n\nConnections: ${analysis?.connections || ''}`,
-      criticNotes: `Main Branches:\n${idea.branches.map((branch, i) => `${i+1}. ${branch}`).join('\n')}`,
+      dreamerNotes: `${centralConceptLabel} ${idea.centralConcept}\n\n${insightsLabel} ${analysis?.insights || ''}`,
+      realistNotes: `${applicationsLabel} ${analysis?.applications || ''}\n\n${connectionsLabel} ${analysis?.connections || ''}`,
+      criticNotes: `${branchesLabel}\n${idea.branches.map((branch, i) => `${i+1}. ${branch}`).join('\n')}`,
     };
   });
 

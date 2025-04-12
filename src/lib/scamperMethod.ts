@@ -79,7 +79,8 @@ export async function generateIdeasUsingScamperMethod(
     4. Optional additional notes about the idea
     
     Make sure to use different SCAMPER techniques across your ideas.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt,
     schema: scamperGeneratorSchema,
   });
@@ -97,7 +98,8 @@ export async function generateIdeasUsingScamperMethod(
     2. Implementation details - concrete steps to realize this idea
     3. Potential challenges and how to overcome them
     Be honest and thorough in your assessment.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Evaluate these SCAMPER-generated ideas:
     ${topIdeas.map(idea => 
       `- ${idea.title}: ${idea.description} (SCAMPER Technique: ${idea.scamperTechnique})`
@@ -111,13 +113,18 @@ export async function generateIdeasUsingScamperMethod(
       evaluation => evaluation.title === idea.title
     );
 
+    // Create labels based on selected language
+    const scamperTechniqueLabel = language === 'ru' ? 'Техника SCAMPER:' : 'SCAMPER Technique:';
+    const implementationLabel = language === 'ru' ? 'Реализация:' : 'Implementation:';
+    const challengesLabel = language === 'ru' ? 'Проблемы и решения:' : 'Challenges:';
+
     return {
       title: idea.title,
       description: idea.description,
       score: evaluation?.score || 5,
-      dreamerNotes: `SCAMPER Technique: ${idea.scamperTechnique}${idea.notes ? `\n\n${idea.notes}` : ''}`,
-      realistNotes: evaluation?.implementation,
-      criticNotes: evaluation?.challenges,
+      dreamerNotes: `${scamperTechniqueLabel} ${idea.scamperTechnique}${idea.notes ? `\n\n${idea.notes}` : ''}`,
+      realistNotes: `${implementationLabel} ${evaluation?.implementation || ''}`,
+      criticNotes: `${challengesLabel} ${evaluation?.challenges || ''}`,
     };
   });
 

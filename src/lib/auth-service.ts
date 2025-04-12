@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import { ITelegramUser } from '@/components/auth/TelegramLoginButton';
+import { ITelegramUser } from "@/types/telegram";
 
 export class AuthService {
   /**

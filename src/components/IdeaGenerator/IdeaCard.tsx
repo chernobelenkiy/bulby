@@ -97,7 +97,7 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
           {idea.description}
         </Typography>
 
-        {/* Notes from different perspectives */}
+        {/* Method-specific details */}
         {(idea.dreamerNotes || idea.realistNotes || idea.criticNotes) && (
           <>
             <Divider sx={{ my: 0.75 }} />
@@ -124,7 +124,10 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 {idea.dreamerNotes && (
                   <Box sx={{ mb: 1 }}>
                     <Typography variant="caption" color="primary" fontWeight="bold">
-                      {t('generator.dreamerNotes')}
+                      {selectedMethod === 'sixHats' && t('generator.methods.sixHats.yellowGreen')}
+                      {selectedMethod === 'scamper' && t('generator.methods.scamper.technique')}
+                      {selectedMethod === 'mindMapping' && t('generator.methods.mindMapping.insights')}
+                      {selectedMethod === 'brainstorming' && t('generator.methods.brainstorming.ideas')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.primary.main}` }}>
                       {idea.dreamerNotes}
@@ -135,7 +138,10 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 {idea.realistNotes && (
                   <Box sx={{ mb: 1 }}>
                     <Typography variant="caption" color="info.main" fontWeight="bold">
-                      {t('generator.realistNotes')}
+                      {selectedMethod === 'sixHats' && t('generator.methods.sixHats.whiteBlue')}
+                      {selectedMethod === 'scamper' && t('generator.methods.scamper.implementation')}
+                      {selectedMethod === 'mindMapping' && t('generator.methods.mindMapping.applications')}
+                      {selectedMethod === 'brainstorming' && t('generator.methods.brainstorming.applications')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.info.main}` }}>
                       {idea.realistNotes}
@@ -146,7 +152,10 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 {idea.criticNotes && (
                   <Box sx={{ mb: 0.5 }}>
                     <Typography variant="caption" color="error.main" fontWeight="bold">
-                      {t('generator.criticNotes')}
+                      {selectedMethod === 'sixHats' && t('generator.methods.sixHats.blackRed')}
+                      {selectedMethod === 'scamper' && t('generator.methods.scamper.challenges')}
+                      {selectedMethod === 'mindMapping' && t('generator.methods.mindMapping.branches')}
+                      {selectedMethod === 'brainstorming' && t('generator.methods.brainstorming.innovation')}
                     </Typography>
                     <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.error.main}` }}>
                       {idea.criticNotes}

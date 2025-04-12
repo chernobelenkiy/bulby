@@ -110,7 +110,8 @@ export async function generateIdeasUsingSixHatsMethod(
     2. A concise description of the idea (2-3 sentences)
     
     These ideas will later be analyzed using Edward de Bono's Six Thinking Hats method.
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt,
     schema: ideaCreatorSchema,
   });
@@ -126,7 +127,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - Available data and facts
     - Information needs and gaps
     - Objective observations
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Provide a White Hat analysis (facts and information only) for each of these ideas:
     ${ideas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: whiteHatSchema,
@@ -141,7 +143,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - Emotional reactions to the idea
     - Intuitive responses
     - How people might feel about the idea
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Provide a Red Hat analysis (emotions and feelings only) for each of these ideas:
     ${ideas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: redHatSchema,
@@ -156,7 +159,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - Potential risks and dangers
     - Logical flaws or weaknesses
     - Obstacles to implementation
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Provide a Black Hat analysis (caution and potential problems) for each of these ideas:
     ${ideas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: blackHatSchema,
@@ -171,7 +175,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - Potential benefits and advantages
     - Value proposition
     - Positive impact and outcomes
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Provide a Yellow Hat analysis (benefits and value) for each of these ideas:
     ${ideas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: yellowHatSchema,
@@ -186,7 +191,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - How the idea could be expanded or improved
     - Creative alternatives and variations
     - Novel approaches to implementation
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Provide a Green Hat analysis (creative possibilities) for each of these ideas:
     ${ideas.map(idea => `- ${idea.title}: ${idea.description}`).join('\n')}`,
     schema: greenHatSchema,
@@ -201,7 +207,8 @@ export async function generateIdeasUsingSixHatsMethod(
     - A summary of the key points from all perspectives
     - Overall evaluation of the idea's potential
     - A score from 1-10 reflecting the overall quality of the idea
-    ${languageInstruction}`,
+    ${languageInstruction}
+    IMPORTANT: Respond in ${language === 'ru' ? 'Russian' : 'English'} language only.`,
     prompt: `Review these ideas and provide a Blue Hat overview (process control and summary).
     
     For each idea, consider these analyses that were previously done:
@@ -231,13 +238,21 @@ export async function generateIdeasUsingSixHatsMethod(
     const greenHat = greenHatResponse.analyses.find(a => a.title === idea.title);
     const blueHat = blueHatResponse.analyses.find(a => a.title === idea.title);
 
+    // Create labels based on selected language
+    const whiteHatLabel = language === 'ru' ? 'Белая шляпа (Факты):' : 'White Hat (Facts):';
+    const redHatLabel = language === 'ru' ? 'Красная шляпа (Эмоции):' : 'Red Hat (Emotions):';
+    const blackHatLabel = language === 'ru' ? 'Черная шляпа (Риски):' : 'Black Hat (Risks):';
+    const yellowHatLabel = language === 'ru' ? 'Желтая шляпа (Преимущества):' : 'Yellow Hat (Benefits):';
+    const greenHatLabel = language === 'ru' ? 'Зеленая шляпа (Креативность):' : 'Green Hat (Creativity):';
+    const blueHatLabel = language === 'ru' ? 'Синяя шляпа (Обзор):' : 'Blue Hat (Overview):';
+
     return {
       title: idea.title,
       description: idea.description,
       score: blueHat?.score || 5,
-      dreamerNotes: `Yellow Hat (Benefits): ${yellowHat?.benefits || ''}\n\nGreen Hat (Creativity): ${greenHat?.creativity || ''}`,
-      realistNotes: `White Hat (Facts): ${whiteHat?.facts || ''}\n\nBlue Hat (Overview): ${blueHat?.overview || ''}`,
-      criticNotes: `Black Hat (Risks): ${blackHat?.risks || ''}\n\nRed Hat (Emotions): ${redHat?.emotions || ''}`,
+      dreamerNotes: `${yellowHatLabel} ${yellowHat?.benefits || ''}\n\n${greenHatLabel} ${greenHat?.creativity || ''}`,
+      realistNotes: `${whiteHatLabel} ${whiteHat?.facts || ''}\n\n${blueHatLabel} ${blueHat?.overview || ''}`,
+      criticNotes: `${blackHatLabel} ${blackHat?.risks || ''}\n\n${redHatLabel} ${redHat?.emotions || ''}`,
     };
   });
 

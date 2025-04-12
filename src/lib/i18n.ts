@@ -47,15 +47,31 @@ const resources = {
           },
           brainstorming: {
             title: "Brainstorming",
-            description: "Generate numerous ideas without judgment to find innovative solutions"
+            description: "Generate numerous ideas without judgment to find innovative solutions",
+            ideas: "Idea Notes",
+            applications: "Application Areas",
+            innovation: "Innovation Factors"
           },
           scamper: {
             title: "SCAMPER",
-            description: "Transform existing ideas using Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse"
+            description: "Transform existing ideas using Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse",
+            technique: "SCAMPER Technique",
+            implementation: "Implementation",
+            challenges: "Challenges"
           },
           sixHats: {
             title: "Six Thinking Hats",
-            description: "Evaluate ideas from multiple perspectives to identify all aspects of a solution"
+            description: "Evaluate ideas from multiple perspectives to identify all aspects of a solution",
+            yellowGreen: "Benefits & Creativity",
+            whiteBlue: "Facts & Overview",
+            blackRed: "Risks & Emotions"
+          },
+          mindMapping: {
+            title: "Mind Mapping",
+            description: "Visually organize information to find connections between ideas and concepts",
+            insights: "Central Concept & Insights",
+            applications: "Applications & Connections",
+            branches: "Main Branches"
           }
         }
       },
@@ -95,19 +111,31 @@ const resources = {
           },
           brainstorming: {
             name: "Brainstorming",
-            description: "Generate numerous ideas without judgment to find innovative solutions"
+            description: "Generate numerous ideas without judgment to find innovative solutions",
+            ideas: "Idea Notes",
+            applications: "Application Areas",
+            innovation: "Innovation Factors"
           },
           scamper: {
             name: "SCAMPER",
-            description: "Transform existing ideas using Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse"
+            description: "Transform existing ideas using Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse",
+            technique: "SCAMPER Technique",
+            implementation: "Implementation",
+            challenges: "Challenges"
           },
           sixHats: {
             name: "Six Thinking Hats",
-            description: "Evaluate ideas from multiple perspectives to identify all aspects of a solution"
+            description: "Evaluate ideas from multiple perspectives to identify all aspects of a solution",
+            yellowGreen: "Benefits & Creativity",
+            whiteBlue: "Facts & Overview",
+            blackRed: "Risks & Emotions"
           },
           mindMapping: {
             name: "Mind Mapping",
-            description: "Visually organize information to find connections between ideas and concepts"
+            description: "Visually organize information to find connections between ideas and concepts",
+            insights: "Central Concept & Insights",
+            applications: "Applications & Connections",
+            branches: "Main Branches"
           }
         }
       },
@@ -161,15 +189,31 @@ const resources = {
           },
           brainstorming: {
             title: "Мозговой штурм",
-            description: "Генерация множества идей без критики для поиска инновационных решений"
+            description: "Генерация множества идей без критики для поиска инновационных решений",
+            ideas: "Заметки к идее",
+            applications: "Области применения",
+            innovation: "Факторы инноваций"
           },
           scamper: {
             title: "СКАМПЕР",
-            description: "Трансформация существующих идей с помощью Замены, Комбинирования, Адаптации, Модификации, Применения в другой области, Исключения и Обращения"
+            description: "Трансформация существующих идей с помощью Замены, Комбинирования, Адаптации, Модификации, Применения в другой области, Исключения и Обращения",
+            technique: "Техника СКАМПЕР",
+            implementation: "Реализация",
+            challenges: "Проблемы и решения"
           },
           sixHats: {
             title: "Шесть шляп мышления",
-            description: "Оценка идей с разных точек зрения для выявления всех аспектов решения"
+            description: "Оценка идей с разных точек зрения для выявления всех аспектов решения",
+            yellowGreen: "Преимущества и Креативность",
+            whiteBlue: "Факты и Обзор",
+            blackRed: "Риски и Эмоции"
+          },
+          mindMapping: {
+            title: "Интеллект-карта",
+            description: "Визуальная организация информации для нахождения связей между идеями и концепциями",
+            insights: "Центральная концепция и Выводы",
+            applications: "Применение и Связи",
+            branches: "Основные ветви"
           }
         }
       },
@@ -209,19 +253,31 @@ const resources = {
           },
           brainstorming: {
             name: "Мозговой штурм",
-            description: "Генерация множества идей без критики для поиска инновационных решений"
+            description: "Генерация множества идей без критики для поиска инновационных решений",
+            ideas: "Заметки к идее",
+            applications: "Области применения",
+            innovation: "Факторы инноваций"
           },
           scamper: {
             name: "СКАМПЕР",
-            description: "Трансформация существующих идей с помощью Замены, Комбинирования, Адаптации, Модификации, Применения в другой области, Исключения и Обращения"
+            description: "Трансформация существующих идей с помощью Замены, Комбинирования, Адаптации, Модификации, Применения в другой области, Исключения и Обращения",
+            technique: "Техника СКАМПЕР",
+            implementation: "Реализация",
+            challenges: "Проблемы и решения"
           },
           sixHats: {
             name: "Шесть шляп мышления",
-            description: "Оценка идей с разных точек зрения для выявления всех аспектов решения"
+            description: "Оценка идей с разных точек зрения для выявления всех аспектов решения",
+            yellowGreen: "Преимущества и Креативность",
+            whiteBlue: "Факты и Обзор",
+            blackRed: "Риски и Эмоции"
           },
           mindMapping: {
             name: "Интеллект-карта",
-            description: "Визуальная организация информации для нахождения связей между идеями и концепциями"
+            description: "Визуальная организация информации для нахождения связей между идеями и концепциями",
+            insights: "Центральная концепция и Выводы",
+            applications: "Применение и Связи",
+            branches: "Основные ветви"
           }
         }
       },
