@@ -1,7 +1,7 @@
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
+import { aiModel } from './ai-models';
 
 // Schemas for agent responses
 const mindMapperSchema = z.object({
@@ -54,7 +54,7 @@ export async function generateIdeasUsingMindMappingMethod(
   
   // 1. Mind Mapper agent - creates the basic mind map structure
   const { object: mindMapperResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in using Mind Mapping for creative idea generation.
     Mind Mapping is a technique that visually organizes information around a central concept, with branches
     representing different aspects or categories.
@@ -78,7 +78,7 @@ export async function generateIdeasUsingMindMappingMethod(
 
   // 2. Connection Analyzer agent - finds connections, insights and applications
   const { object: analyzerResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in analyzing mind maps to uncover insights and applications.
     Your job is to examine mind map structures and identify connections between concepts,
     extract insights, and suggest practical applications.

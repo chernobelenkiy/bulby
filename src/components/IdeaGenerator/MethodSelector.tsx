@@ -1,5 +1,4 @@
 import { 
-  Typography, 
   Paper, 
   FormControl,
   InputLabel,
@@ -9,7 +8,7 @@ import {
   useTheme
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useIdeaGeneratorStore, Method } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore, Method } from '@/store/ideaGeneratorStore';
 
 export default function MethodSelector() {
   const { t } = useTranslation();
@@ -26,22 +25,11 @@ export default function MethodSelector() {
     <Paper 
       elevation={2}
       sx={{ 
-        p: 2, 
+        p: 0, 
         borderRadius: 2,
         textAlign: 'center'
       }}
     >
-      <Typography 
-        variant="h5" 
-        component="h2" 
-        gutterBottom
-        fontWeight="bold"
-        color={theme.palette.primary.main}
-        sx={{ fontSize: { xs: '1.5rem', sm: '1.8rem' } }}
-      >
-        {t('generator.title')}
-      </Typography>
-      
       <FormControl 
         sx={{ 
           width: '100%',

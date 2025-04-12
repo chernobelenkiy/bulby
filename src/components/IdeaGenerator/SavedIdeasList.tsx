@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
-import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
 import { useTranslation } from 'react-i18next';
 
 export default function SavedIdeasList() {

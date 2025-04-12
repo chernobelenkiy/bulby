@@ -12,7 +12,7 @@ export default function UserProvider({ children }: { children: ReactNode }) {
   // Initialize Telegram Mini App
   useEffect(() => {
     init();
-      miniApp.mountSync();
+    miniApp.mountSync();
   }, []);
   
   // Handle authentication using the SDK's init data

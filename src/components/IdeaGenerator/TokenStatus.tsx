@@ -1,5 +1,5 @@
 import { Box, Typography, Tooltip, Chip } from '@mui/material';
-import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { METHOD_COSTS } from '@/lib/tokenManager';

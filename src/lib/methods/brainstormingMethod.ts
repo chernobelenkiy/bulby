@@ -1,7 +1,7 @@
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
+import { aiModel } from './ai-models';
 
 // Schemas for agent responses
 const ideaGeneratorSchema = z.object({
@@ -50,7 +50,7 @@ export async function generateIdeasUsingBrainstormingMethod(
   
   // 1. Idea Generator agent - focuses on quantity and diversity
   const { object: generatorResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in the brainstorming technique for idea generation.
     Your goal is to generate as many creative and innovative ideas as possible without any filtering or judgment.
     Remember that in brainstorming, quantity is more important than quality at this stage.
@@ -70,7 +70,7 @@ export async function generateIdeasUsingBrainstormingMethod(
 
   // 2. Evaluator agent - assesses innovation and application areas
   const { object: evaluatorResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in evaluating innovative ideas.
     Your job is to assess each idea based on its innovation factor and potential application areas.
     For each idea, provide:

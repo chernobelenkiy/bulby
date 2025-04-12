@@ -1,6 +1,6 @@
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
+import { aiModel } from './ai-models';
 import { GeneratedIdea } from '@/types/ideas';
 
 // Schemas for agent responses
@@ -60,7 +60,7 @@ export async function generateIdeasUsingScamperMethod(
   
   // 1. SCAMPER Generator agent - creates ideas using specific techniques
   const { object: scamperResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in the SCAMPER method for idea generation and transformation.
     SCAMPER stands for:
     - Substitute: Replace part of a concept with something else
@@ -90,7 +90,7 @@ export async function generateIdeasUsingScamperMethod(
 
   // 2. Implementation Evaluator agent - assesses feasibility and implementation
   const { object: implementationResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are an expert in evaluating the practicality and implementation of innovative ideas.
     Your job is to assess each idea based on its feasibility, implementation path, and potential challenges.
     For each idea, provide:

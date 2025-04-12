@@ -1,7 +1,7 @@
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
+import { aiModel } from './ai-models';
 
 // Schemas for agent responses
 const ideaCreatorSchema = z.object({
@@ -102,7 +102,7 @@ export async function generateIdeasUsingSixHatsMethod(
   
   // 1. Idea Creator - generate initial ideas
   const { object: ideaCreatorResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are a creative idea generator.
     Generate 4 innovative and diverse ideas based on the user's prompt.
     For each idea, provide:
@@ -120,7 +120,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 2. White Hat Agent - Facts and information
   const { object: whiteHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the White Hat thinker in the Six Thinking Hats method.
     Your role is to focus purely on facts, data, and information without interpretation.
     For each idea, provide an objective analysis focusing only on:
@@ -136,7 +136,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 3. Red Hat Agent - Emotions and feelings
   const { object: redHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the Red Hat thinker in the Six Thinking Hats method.
     Your role is to focus on emotions, feelings, and intuition without justification.
     For each idea, provide an analysis focusing only on:
@@ -152,7 +152,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 4. Black Hat Agent - Caution and risks
   const { object: blackHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the Black Hat thinker in the Six Thinking Hats method.
     Your role is to identify risks, problems, and obstacles.
     For each idea, provide a critical analysis focusing only on:
@@ -168,7 +168,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 5. Yellow Hat Agent - Benefits and optimism
   const { object: yellowHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the Yellow Hat thinker in the Six Thinking Hats method.
     Your role is to identify benefits, value, and positive aspects.
     For each idea, provide an optimistic analysis focusing only on:
@@ -184,7 +184,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 6. Green Hat Agent - Creativity and alternatives
   const { object: greenHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the Green Hat thinker in the Six Thinking Hats method.
     Your role is to focus on creativity, new possibilities, and alternatives.
     For each idea, provide a creative analysis focusing only on:
@@ -200,7 +200,7 @@ export async function generateIdeasUsingSixHatsMethod(
 
   // 7. Blue Hat Agent - Process and overview (also assigns scores)
   const { object: blueHatResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are the Blue Hat thinker in the Six Thinking Hats method.
     Your role is to provide process control, overall evaluation, and conclusions.
     For each idea, provide a comprehensive overview focusing on:

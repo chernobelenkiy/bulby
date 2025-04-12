@@ -15,7 +15,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
 import { GeneratedIdea } from '@/types/ideas';
-import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
 import { useTranslation } from 'react-i18next';
 
 interface IdeaCardProps {

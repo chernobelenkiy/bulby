@@ -1,7 +1,7 @@
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { GeneratedIdea } from '@/types/ideas';
+import { aiModel } from './ai-models';
 
 // Schemas for the agent responses
 const dreamerSchema = z.object({
@@ -64,7 +64,7 @@ export async function generateIdeasUsingDisneyMethod(
   
   // 1. Dreamer agent - generates creative ideas
   const { object: dreamerResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are a creative Dreamer in Walt Disney's method of idea generation. 
     Your role is to think big, be imaginative, and generate innovative ideas without worrying about practicality. 
     Generate 5-7 creative ideas based on the user's prompt.
@@ -78,7 +78,7 @@ export async function generateIdeasUsingDisneyMethod(
 
   // 2. Realist agent - evaluates feasibility
   const { object: realistResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are a practical Realist in Walt Disney's method of idea generation.
     Your role is to evaluate ideas from a practical standpoint, considering resources needed, feasibility, and implementation challenges.
     Analyze each idea and provide a feasibility score (1-10) and practical considerations.
@@ -90,7 +90,7 @@ export async function generateIdeasUsingDisneyMethod(
 
   // 3. Critic agent - finds weaknesses and suggests improvements
   const { object: criticResponse } = await generateObject({
-    model: openai('gpt-4o'),
+    model: aiModel,
     system: `You are a constructive Critic in Walt Disney's method of idea generation.
     Your role is to identify potential weaknesses, problems, and risks with each idea.
     Be constructive but thorough in your criticism, and suggest possible improvements.

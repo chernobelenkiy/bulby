@@ -12,7 +12,7 @@ import {
   Tooltip
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
+import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
 import IdeaCard from './IdeaCard';
 import { useTranslation } from 'react-i18next';
 import { hasEnoughTokens, METHOD_COSTS } from '@/lib/tokenManager';
@@ -159,9 +159,7 @@ export default function ChatInterface() {
             px: 2,
             py: 1
           }}
-        >
-          {isLoading ? t('generator.generating') : t('generator.send')}
-        </Button>
+        />
       </Box>
     </Paper>
   );
