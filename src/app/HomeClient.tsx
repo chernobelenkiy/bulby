@@ -503,6 +503,63 @@ export default function HomeClient() {
           </Button>
         </Container>
       </Box>
+      
+      {/* Footer with Creator Contact */}
+      <Box 
+        sx={{ 
+          py: 4,
+          backgroundColor: alpha(theme.palette.primary.light, 0.05),
+          borderTop: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+          textAlign: 'center'
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box 
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              py: 1.5,
+              px: 4,
+              borderRadius: 2,
+              backgroundColor: alpha(theme.palette.background.paper, 0.7),
+              boxShadow: `0 3px 10px ${alpha(theme.palette.primary.main, 0.15)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: `0 6px 14px ${alpha(theme.palette.primary.main, 0.2)}`
+              }
+            }}
+          >
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                fontWeight: 500,
+                letterSpacing: '0.02em'
+              }}
+            >
+              Created by 
+              <Link 
+                href="https://t.me/meta_ivan" 
+                target="_blank" 
+                rel="noopener" 
+                style={{ 
+                  textDecoration: 'none', 
+                  color: theme.palette.primary.main,
+                  fontWeight: 'bold',
+                  borderBottom: `2px solid ${alpha(theme.palette.primary.main, 0.3)}`,
+                  transition: 'color 0.2s, border-color 0.2s'
+                }}
+              >
+                @meta_ivan
+              </Link>
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
     </main>
   );
 } 
