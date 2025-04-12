@@ -8,12 +8,14 @@ import {
   Stack,
   CircularProgress,
   Typography,
-  useTheme
+  useTheme,
+  Tooltip
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useIdeaGeneratorStore } from '@/stores/ideaGeneratorStore';
 import IdeaCard from './IdeaCard';
 import { useTranslation } from 'react-i18next';
+import { hasEnoughTokens, METHOD_COSTS } from '@/lib/tokenManager';
 
 export default function ChatInterface() {
   const [chatMessage, setChatMessage] = useState('');
@@ -25,8 +27,11 @@ export default function ChatInterface() {
   const isLoading = useIdeaGeneratorStore(state => state.isLoading);
   const generateIdeas = useIdeaGeneratorStore(state => state.generateIdeas);
 
+  const hasTokens = selectedMethod ? hasEnoughTokens(selectedMethod) : true;
+  const methodCost = selectedMethod ? METHOD_COSTS[selectedMethod as keyof typeof METHOD_COSTS] || 10 : 0;
+
   const handleSendMessage = async () => {
-    if (!chatMessage.trim() || !selectedMethod) return;
+    if (!chatMessage.trim() || !selectedMethod || !hasTokens) return;
     await generateIdeas(chatMessage, selectedMethod);
     setChatMessage('');
   };
@@ -117,30 +122,38 @@ export default function ChatInterface() {
         maxWidth: '98%',
         mx: 'auto'
       }}>
-        <TextField
-          fullWidth
-          placeholder={t('generator.prompt')}
-          variant="outlined"
-          value={chatMessage}
-          onChange={(e) => setChatMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          multiline
-          maxRows={2}
-          sx={{ 
-            mr: 1,
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 1.5
-            }
-          }}
-          disabled={isLoading || !selectedMethod}
-        />
+        <Tooltip 
+          title={selectedMethod && !hasTokens 
+            ? t('generator.notEnoughTokens', { cost: methodCost }) 
+            : ''}
+          arrow
+          placement="top"
+        >
+          <TextField
+            fullWidth
+            placeholder={t('generator.prompt')}
+            variant="outlined"
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            multiline
+            maxRows={2}
+            sx={{ 
+              mr: 1,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 1.5
+              }
+            }}
+            disabled={isLoading || !selectedMethod || !hasTokens}
+          />
+        </Tooltip>
         <Button 
           variant="contained"
           color="primary"
           size="medium"
           endIcon={isLoading ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
           onClick={handleSendMessage}
-          disabled={!chatMessage.trim() || !selectedMethod || isLoading}
+          disabled={!chatMessage.trim() || !selectedMethod || isLoading || !hasTokens}
           sx={{ 
             borderRadius: 1.5,
             px: 2,

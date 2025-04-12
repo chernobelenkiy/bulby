@@ -2,6 +2,7 @@ import { Container, Box, useTheme } from '@mui/material';
 import MethodSelector from './MethodSelector';
 import ChatInterface from './ChatInterface';
 import SavedIdeasList from './SavedIdeasList';
+import TokenStatus from './TokenStatus';
 
 export default function IdeaGenerator() {
   const theme = useTheme();
@@ -26,6 +27,11 @@ export default function IdeaGenerator() {
         {/* Method selector centered at the top */}
         <Box sx={{ width: '100%', maxWidth: '450px', mb: 2 }}>
           <MethodSelector />
+        </Box>
+        
+        {/* Token status */}
+        <Box sx={{ width: '100%', maxWidth: '450px' }}>
+          <TokenStatus />
         </Box>
         
         {/* Chat area */}

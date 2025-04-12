@@ -104,6 +104,10 @@ const resources = {
         dreamerNotes: "Dreamer Notes:",
         realistNotes: "Realist Notes:",
         criticNotes: "Critic Notes:",
+        tokens: "Tokens: {{balance}}",
+        tokenCost: "Cost: {{cost}} tokens",
+        notEnoughTokens: "You don't have enough tokens to use this method (cost: {{cost}} tokens). Your tokens will refresh tomorrow.",
+        dailyLimit: "Daily limit: 200 tokens",
         methods: {
           disney: {
             name: "Disney Method",
@@ -246,6 +250,10 @@ const resources = {
         dreamerNotes: "Заметки Мечтателя:",
         realistNotes: "Заметки Реалиста:",
         criticNotes: "Заметки Критика:",
+        tokens: "Токены: {{balance}}",
+        tokenCost: "Стоимость: {{cost}} токенов",
+        notEnoughTokens: "У вас недостаточно токенов для использования этого метода (стоимость: {{cost}} токенов). Ваши токены обновятся завтра.",
+        dailyLimit: "Дневной лимит: 200 токенов",
         methods: {
           disney: {
             name: "Метод Диснея",

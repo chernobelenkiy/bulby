@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChatMessage, GeneratedIdea } from '@/types/ideas';
 import i18n from '@/lib/i18n';
+import { getTokenBalance, deductTokens, hasEnoughTokens, METHOD_COSTS } from '@/lib/tokenManager';
 
 // Define Method interface
 export interface Method {
@@ -78,6 +79,10 @@ interface IdeaGeneratorState {
   saveIdea: (idea: GeneratedIdea, method: string) => void;
   removeIdea: (ideaTitle: string) => void;
   
+  // Token management
+  tokenBalance: number;
+  refreshTokenBalance: () => void;
+  
   // Generate ideas using the API
   generateIdeas: (prompt: string, method: string) => Promise<void>;
 }
@@ -98,6 +103,15 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
       ],
       isLoading: false,
       savedIdeas: [],
+      
+      // Initial token balance
+      tokenBalance: 0, // Will be refreshed on component mount
+      
+      // Refresh token balance from storage
+      refreshTokenBalance: () => {
+        const balance = getTokenBalance();
+        set({ tokenBalance: balance });
+      },
       
       // Method selection
       setSelectedMethod: (method) => {
@@ -169,7 +183,18 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
       
       // Generate ideas API call
       generateIdeas: async (prompt, method) => {
-        const { addMessage, setIsLoading } = get();
+        const { addMessage, setIsLoading, refreshTokenBalance } = get();
+        
+        // Check if user has enough tokens
+        if (!hasEnoughTokens(method)) {
+          addMessage({
+            text: i18n.t('generator.notEnoughTokens', { 
+              cost: METHOD_COSTS[method as keyof typeof METHOD_COSTS] || 10 
+            }),
+            isUser: false
+          });
+          return;
+        }
         
         // Add user message
         addMessage({ text: prompt, isUser: true });
@@ -197,6 +222,10 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
           const data = await response.json();
           
           if (response.ok) {
+            // Deduct tokens on successful generation
+            deductTokens(method);
+            refreshTokenBalance();
+            
             // Add AI response with generated ideas
             addMessage({
               text: i18n.t('generator.ideasGenerated', { prompt }),
