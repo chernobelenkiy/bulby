@@ -21,15 +21,18 @@ import {
   TextField,
   Stack,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Collapse
 } from '@mui/material';
 import { GridContainer, GridItem } from '@/components/CustomGrid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ChatIcon from '@mui/icons-material/Chat';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
 import { useIdeasStore } from '@/store/ideasStore';
+import { useTheme } from '@mui/material/styles';
 
 export default function IdeasPage() {
   const { t } = useTranslation();
@@ -38,6 +41,7 @@ export default function IdeasPage() {
   const [currentIdeaId, setCurrentIdeaId] = useState<string | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
+  const [expandedIdeas, setExpandedIdeas] = useState<Record<string, boolean>>({});
   
   // Get data and actions from the ideas store
   const { 
@@ -113,6 +117,16 @@ export default function IdeasPage() {
     }
   };
 
+  // Toggle expanded state for an idea
+  const toggleExpand = (ideaId: string) => {
+    setExpandedIdeas(prev => ({
+      ...prev,
+      [ideaId]: !prev[ideaId]
+    }));
+  };
+
+  const theme = useTheme();
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -186,6 +200,67 @@ export default function IdeasPage() {
                   <Typography variant="body2" color="text.secondary">
                     {idea.description}
                   </Typography>
+                  
+                  {/* Notes section */}
+                  {(idea.dreamerNotes || idea.realistNotes || idea.criticNotes) && (
+                    <>
+                      <Divider sx={{ my: 1.5 }} />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
+                        <Button
+                          size="small"
+                          color="primary"
+                          endIcon={<ExpandMoreIcon 
+                            sx={{ 
+                              transform: expandedIdeas[idea.id] ? 'rotate(180deg)' : 'rotate(0deg)',
+                              transition: 'transform 0.3s',
+                              fontSize: '1rem'
+                            }} 
+                          />}
+                          onClick={() => toggleExpand(idea.id)}
+                          sx={{ py: 0, px: 1, minWidth: 'auto' }}
+                        >
+                          {expandedIdeas[idea.id] ? t('generator.hideDetails') : t('generator.showDetails')}
+                        </Button>
+                      </Box>
+                      
+                      <Collapse in={expandedIdeas[idea.id]} timeout="auto" unmountOnExit>
+                        <Box sx={{ mt: 1 }}>
+                          {idea.dreamerNotes && (
+                            <Box sx={{ mb: 1 }}>
+                              <Typography variant="caption" color="primary" fontWeight="bold">
+                                {t('generator.dreamerNotes')}
+                              </Typography>
+                              <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.primary.main}`, mb: 1 }}>
+                                {idea.dreamerNotes}
+                              </Typography>
+                            </Box>
+                          )}
+                          
+                          {idea.realistNotes && (
+                            <Box sx={{ mb: 1 }}>
+                              <Typography variant="caption" color="info.main" fontWeight="bold">
+                                {t('generator.realistNotes')}
+                              </Typography>
+                              <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.info.main}`, mb: 1 }}>
+                                {idea.realistNotes}
+                              </Typography>
+                            </Box>
+                          )}
+                          
+                          {idea.criticNotes && (
+                            <Box sx={{ mb: 0.5 }}>
+                              <Typography variant="caption" color="error.main" fontWeight="bold">
+                                {t('generator.criticNotes')}
+                              </Typography>
+                              <Typography variant="body2" sx={{ pl: 1, borderLeft: `2px solid ${theme.palette.error.main}`, mb: 0.5 }}>
+                                {idea.criticNotes}
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </Collapse>
+                    </>
+                  )}
                 </CardContent>
                 
                 <CardActions>

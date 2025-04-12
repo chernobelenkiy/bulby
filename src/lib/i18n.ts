@@ -155,7 +155,13 @@ const resources = {
         noIdeas: "You haven't generated any ideas yet.",
         create: "Create New Idea",
         edit: "Edit",
-        delete: "Delete"
+        delete: "Delete",
+        save: "Save",
+        cancel: "Cancel",
+        editIdea: "Edit Idea",
+        deleteIdea: "Delete Idea",
+        deleteConfirmation: "Are you sure you want to delete the idea \"{{title}}\"? This action cannot be undone.",
+        retry: "Retry"
       }
     }
   },
@@ -308,7 +314,14 @@ const resources = {
         noIdeas: "Вы еще не сгенерировали ни одной идеи.",
         create: "Создать Новую Идею",
         edit: "Редактировать",
-        delete: "Удалить"
+        delete: "Удалить",
+        save: "Сохранить",
+        cancel: "Отмена",
+        editIdea: "Редактировать Идею",
+        deleteIdea: "Удалить Идею",
+        deleteConfirmation: "Вы уверены, что хотите удалить идею \"{{title}}\"? Это действие нельзя отменить.",
+        retry: "Повторить",
+        description: "Описание",
       }
     }
   }

@@ -6,6 +6,12 @@ export interface Idea {
   createdAt: Date;
   method: string;
   userId?: string; // Optional as ideas can be generated without auth
+  
+  // Additional fields for idea metadata
+  dreamerNotes?: string;
+  realistNotes?: string;
+  criticNotes?: string;
+  score?: number;
 }
 
 // Generated idea from AI
