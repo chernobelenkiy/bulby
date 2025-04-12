@@ -30,4 +30,6 @@ export interface ChatMessage {
   text: string;
   isUser: boolean;
   ideas?: GeneratedIdea[]; // For messages containing generated ideas
+  isMethodDescription?: boolean;
+  tooltipContent?: string;
 } 

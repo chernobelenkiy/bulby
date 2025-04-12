@@ -141,6 +141,13 @@ const resources = {
             applications: "Applications & Connections",
             branches: "Main Branches"
           }
+        },
+        tooltips: {
+          brainstorming: "Brainstorming helps you generate many ideas without judgment. Write down every idea that comes to mind, focusing on quantity over quality initially. This allows creativity to flow freely without self-censorship. After generating many ideas, you can evaluate and refine the most promising ones.",
+          scamper: "SCAMPER is a creative technique that helps you improve ideas by: Substitute (replace parts), Combine (merge elements or ideas), Adapt (alter for a new use or purpose), Modify (change attributes like size or frequency), Put to another use (find new ways to use it), Eliminate (remove elements or simplify), and Reverse (consider opposite perspectives or arrangements).",
+          sixHats: "Six Thinking Hats helps you look at problems from different perspectives: White Hat (focus on available data and facts), Red Hat (express feelings and intuition without justification), Black Hat (identify difficulties, dangers, and potential problems), Yellow Hat (focus on benefits and value), Green Hat (creative thinking and new ideas), and Blue Hat (manage the thinking process and focus).",
+          mindMapping: "Mind Mapping helps you organize information visually. Start with a central idea and branch out with related concepts to discover new connections. This technique helps visualize relationships between concepts, improves memory retention, and can reveal unexpected connections. The spatial organization makes complex information easier to understand and recall.",
+          disney: "The Disney Method analyzes ideas from three perspectives: Dreamer (what's possible, without limitations), Realist (how to implement the idea practically), and Critic (evaluate potential problems and suggest improvements). By cycling through these three roles, you can develop well-rounded ideas that are both innovative and practical."
         }
       },
       ideas: {
@@ -155,7 +162,7 @@ const resources = {
   ru: {
     translation: {
       app: {
-        name: "Генератор Идей",
+        name: "Bulby",
         slogan: "Генерируйте инновационные идеи с помощью ИИ"
       },
       nav: {
@@ -287,6 +294,13 @@ const resources = {
             applications: "Применение и Связи",
             branches: "Основные ветви"
           }
+        },
+        tooltips: {
+          brainstorming: "Мозговой штурм помогает генерировать множество идей без критики. Записывайте каждую идею, которая приходит в голову, делая акцент на количестве, а не на качестве. Это позволяет творчеству течь свободно без самоцензуры. После генерации большого количества идей вы можете оценить и доработать наиболее перспективные.",
+          scamper: "СКАМПЕР - это творческая методика, помогающая улучшать идеи с помощью: Замены (замена частей), Комбинирования (объединение элементов или идей), Адаптации (изменение для нового использования), Модификации (изменение атрибутов, например, размера или частоты), Применения в другой области (поиск новых способов использования), Исключения (удаление элементов или упрощение) и Обращения (рассмотрение противоположных перспектив).",
+          sixHats: "Шесть шляп мышления помогают рассматривать проблемы с разных точек зрения: Белая шляпа (факты и информация), Красная шляпа (интуиция и эмоции), Черная шляпа (риски и проблемы), Желтая шляпа (преимущества и ценность), Зеленая шляпа (креативное мышление и новые идеи), Синяя шляпа (управление процессом мышления и фокусировка).",
+          mindMapping: "Интеллект-карта помогает визуально организовать информацию. Начните с центральной идеи и развивайте связанные концепции, чтобы обнаружить новые связи. Эта техника помогает визуализировать отношения между понятиями, улучшает запоминание и может выявить неожиданные связи. Пространственная организация делает сложную информацию более понятной и легкой для запоминания.",
+          disney: "Метод Диснея анализирует идеи с трех позиций: Мечтатель (что возможно, без ограничений), Реалист (как практически реализовать идею) и Критик (оценка потенциальных проблем и предложение улучшений). Циклически проходя через эти три роли, вы можете разработать всесторонние идеи, которые одновременно инновационные и практичные."
         }
       },
       ideas: {

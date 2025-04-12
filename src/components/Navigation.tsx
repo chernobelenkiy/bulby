@@ -163,16 +163,8 @@ export default function Navigation() {
             <LanguageSwitcher />
             
             {/* User Avatar (when logged in) or Login Button (when not) */}
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <UserAvatar />
-            ) : (
-              <Button 
-                color="inherit"
-                component={Link}
-                href="/auth/signin"
-              >
-                {getTranslation('nav.signin', fallbackNavItems.signin)}
-              </Button>
             )}
           </Box>
         </Toolbar>

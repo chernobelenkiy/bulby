@@ -124,6 +124,28 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
           const methodName = methodDetails.nameKey ? i18n.t(methodDetails.nameKey) : methodDetails.name;
           const methodDescription = methodDetails.descriptionKey ? i18n.t(methodDetails.descriptionKey) : methodDetails.description;
           
+          // Create a more detailed tooltip content based on the method
+          let tooltipContent = '';
+          switch (method) {
+            case 'brainstorming':
+              tooltipContent = i18n.t('generator.tooltips.brainstorming', { defaultValue: 'Brainstorming helps you generate many ideas without judgment. Write down every idea that comes to mind, focusing on quantity over quality initially.' });
+              break;
+            case 'scamper':
+              tooltipContent = i18n.t('generator.tooltips.scamper', { defaultValue: 'SCAMPER is a creative technique that helps you improve ideas by: Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, and Reverse.' });
+              break;
+            case 'sixHats':
+              tooltipContent = i18n.t('generator.tooltips.sixHats', { defaultValue: 'Six Thinking Hats helps you look at problems from different perspectives: White (facts), Red (feelings), Black (caution), Yellow (benefits), Green (creativity), and Blue (process).' });
+              break;
+            case 'mindMapping':
+              tooltipContent = i18n.t('generator.tooltips.mindMapping', { defaultValue: 'Mind Mapping helps you organize information visually. Start with a central idea and branch out with related concepts to discover new connections.' });
+              break;
+            case 'disney':
+              tooltipContent = i18n.t('generator.tooltips.disney', { defaultValue: 'The Disney Method analyzes ideas from three perspectives: Dreamer (what\'s possible), Realist (how to implement), and Critic (evaluate and refine).' });
+              break;
+            default:
+              tooltipContent = methodDescription;
+          }
+          
           set({
             messages: [
               ...messages, 
@@ -132,7 +154,9 @@ export const useIdeaGeneratorStore = create<IdeaGeneratorState>()(
                   methodName,
                   methodDescription
                 }),
-                isUser: false
+                isUser: false,
+                isMethodDescription: true,
+                tooltipContent
               }
             ]
           });

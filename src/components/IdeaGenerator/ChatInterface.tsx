@@ -9,7 +9,9 @@ import {
   CircularProgress,
   Typography,
   useTheme,
-  Tooltip
+  Tooltip,
+  Card,
+  CardContent,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useIdeaGeneratorStore } from '@/store/ideaGeneratorStore';
@@ -76,29 +78,50 @@ export default function ChatInterface() {
                 width: msg.ideas && msg.ideas.length > 0 ? '100%' : 'auto'
               }}
             >
-              <Paper 
-                elevation={1} 
-                sx={{ 
-                  p: 1.5, 
-                  bgcolor: msg.isUser ? theme.palette.primary.main : theme.palette.background.paper,
-                  color: msg.isUser ? theme.palette.primary.contrastText : theme.palette.text.primary,
-                  borderRadius: 2,
-                  boxShadow: 0
-                }}
-              >
-                <Typography variant="body2">
-                  {msg.text}
-                </Typography>
-                
-                {/* Render ideas if present */}
-                {msg.ideas && msg.ideas.length > 0 && (
-                  <Box sx={{ mt: 1.5 }}>
-                    {msg.ideas.map((idea) => (
-                      <IdeaCard key={idea.title} idea={idea} />
-                    ))}
-                  </Box>
-                )}
-              </Paper>
+              {msg.isMethodDescription ? (
+                <Card 
+                  elevation={2}
+                  sx={{ 
+                    width: '100%', 
+                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.primary.light}`,
+                    bgcolor: theme.palette.background.default,
+                    mb: 1
+                  }}
+                >
+                  <CardContent sx={{ pb: '12px !important' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="body1" fontWeight="medium">
+                        {msg.text}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Paper 
+                  elevation={1} 
+                  sx={{ 
+                    p: 1.5, 
+                    bgcolor: msg.isUser ? theme.palette.primary.main : theme.palette.background.paper,
+                    color: msg.isUser ? theme.palette.primary.contrastText : theme.palette.text.primary,
+                    borderRadius: 2,
+                    boxShadow: 0
+                  }}
+                >
+                  <Typography variant="body2">
+                    {msg.text}
+                  </Typography>
+                  
+                  {/* Render ideas if present */}
+                  {msg.ideas && msg.ideas.length > 0 && (
+                    <Box sx={{ mt: 1.5 }}>
+                      {msg.ideas.map((idea) => (
+                        <IdeaCard key={idea.title} idea={idea} />
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              )}
             </Box>
           ))}
           
