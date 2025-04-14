@@ -1,6 +1,5 @@
 "use client";
 import { 
-  Paper, 
   FormControl,
   InputLabel,
   Select,
@@ -23,43 +22,34 @@ export default function MethodSelector() {
   };
 
   return (
-    <Paper 
-      elevation={2}
+    <FormControl 
       sx={{ 
-        p: 0, 
-        borderRadius: 2,
-        textAlign: 'center'
+        width: '100%',
+        maxWidth: '300px',
+        mb: selectedMethod ? 2 : 0
       }}
     >
-      <FormControl 
-        sx={{ 
-          width: '100%',
-          maxWidth: '300px',
-          mb: selectedMethod ? 2 : 0
+      <InputLabel id="method-select-label">{t('generator.selectMethod')}</InputLabel>
+      
+      <Select
+        labelId="method-select-label"
+        id="method-select"
+        value={selectedMethod}
+        label={t('generator.selectMethod')}
+        onChange={handleMethodChange}
+        sx={{
+          borderRadius: 1,
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.primary.light
+          }
         }}
       >
-        <InputLabel id="method-select-label">{t('generator.selectMethod')}</InputLabel>
-        
-        <Select
-          labelId="method-select-label"
-          id="method-select"
-          value={selectedMethod}
-          label={t('generator.selectMethod')}
-          onChange={handleMethodChange}
-          sx={{
-            borderRadius: 1,
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: theme.palette.primary.light
-            }
-          }}
-        >
-          {methods.map((method: Method) => (
-            <MenuItem key={method.id} value={method.id}>
-              {method.nameKey ? t(method.nameKey) : method.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Paper>
+        {methods.map((method: Method) => (
+          <MenuItem key={method.id} value={method.id}>
+            {method.nameKey ? t(method.nameKey) : method.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 } 

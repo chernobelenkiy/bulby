@@ -7,7 +7,7 @@ const DEFAULT_DAILY_TOKENS = 200;
 // Method costs in tokens (based on number of AI calls × 10)
 export const METHOD_COSTS = {
   brainstorming: 20, // 2 AI calls
-  scamper: 20,       // 2 AI calls
+  scamper: 70,       // 7 AI calls
   mindMapping: 20,   // 2 AI calls
   sixHats: 70,       // 7 AI calls
   disney: 30,        // 3 AI calls (assumed)
